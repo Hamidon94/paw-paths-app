@@ -28,10 +28,10 @@ export const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button variant="hero" size="lg" className="text-lg px-8 py-4 h-auto">
+            <Button variant="hero" size="lg" className="text-lg px-8 py-4 h-auto" onClick={() => window.location.href = '/auth'}>
               Réserver une promenade
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-4 h-auto bg-white/10 border-white/30 text-white hover:bg-white/20">
+            <Button variant="outline" size="lg" className="text-lg px-8 py-4 h-auto bg-white/10 border-white/30 text-white hover:bg-white/20" onClick={() => window.location.href = '/auth'}>
               Devenir promeneur
             </Button>
           </div>
