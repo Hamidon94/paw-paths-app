@@ -79,6 +79,105 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          booking_date: string
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          client_user_id: string
+          commission_amount: number
+          commission_rate: number
+          completed_at: string | null
+          created_at: string
+          dog_id: string
+          duration_minutes: number
+          id: string
+          payment_status: string
+          pickup_address: string
+          pickup_latitude: number | null
+          pickup_longitude: number | null
+          special_instructions: string | null
+          start_time: string
+          started_at: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          total_price: number
+          updated_at: string
+          walker_amount: number
+          walker_id: string
+          walker_notes: string | null
+        }
+        Insert: {
+          booking_date: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          client_user_id: string
+          commission_amount: number
+          commission_rate?: number
+          completed_at?: string | null
+          created_at?: string
+          dog_id: string
+          duration_minutes?: number
+          id?: string
+          payment_status?: string
+          pickup_address: string
+          pickup_latitude?: number | null
+          pickup_longitude?: number | null
+          special_instructions?: string | null
+          start_time: string
+          started_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          total_price: number
+          updated_at?: string
+          walker_amount: number
+          walker_id: string
+          walker_notes?: string | null
+        }
+        Update: {
+          booking_date?: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          client_user_id?: string
+          commission_amount?: number
+          commission_rate?: number
+          completed_at?: string | null
+          created_at?: string
+          dog_id?: string
+          duration_minutes?: number
+          id?: string
+          payment_status?: string
+          pickup_address?: string
+          pickup_latitude?: number | null
+          pickup_longitude?: number | null
+          special_instructions?: string | null
+          start_time?: string
+          started_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          total_price?: number
+          updated_at?: string
+          walker_amount?: number
+          walker_id?: string
+          walker_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_walker_id_fkey"
+            columns: ["walker_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_list_items: {
         Row: {
           added_at: string
@@ -212,6 +311,57 @@ export type Database = {
           },
         ]
       }
+      dogs: {
+        Row: {
+          age: number
+          behavior_notes: string | null
+          breed: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          medical_notes: string | null
+          name: string
+          photo_url: string | null
+          size: string
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          age: number
+          behavior_notes?: string | null
+          breed: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          medical_notes?: string | null
+          name: string
+          photo_url?: string | null
+          size: string
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          age?: number
+          behavior_notes?: string | null
+          breed?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          medical_notes?: string | null
+          name?: string
+          photo_url?: string | null
+          size?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
       exports: {
         Row: {
           contact_count: number
@@ -330,6 +480,54 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          booking_id: string
+          client_user_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          is_visible: boolean
+          rating: number
+          walker_id: string
+        }
+        Insert: {
+          booking_id: string
+          client_user_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          rating: number
+          walker_id: string
+        }
+        Update: {
+          booking_id?: string
+          client_user_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          rating?: number
+          walker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_walker_id_fkey"
+            columns: ["walker_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
@@ -482,6 +680,145 @@ export type Database = {
           subscription_end_date?: string | null
           total_contacts_imported?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      walker_availability: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_active: boolean
+          start_time: string
+          walker_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_active?: boolean
+          start_time: string
+          walker_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          start_time?: string
+          walker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "walker_availability_walker_id_fkey"
+            columns: ["walker_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      walker_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          is_profile_photo: boolean
+          photo_url: string
+          walker_id: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          is_profile_photo?: boolean
+          photo_url: string
+          walker_id: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          is_profile_photo?: boolean
+          photo_url?: string
+          walker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "walker_photos_walker_id_fkey"
+            columns: ["walker_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      walkers: {
+        Row: {
+          address: string | null
+          bio: string | null
+          certifications: string[] | null
+          city: string | null
+          created_at: string
+          experience_years: number | null
+          hourly_rate: number
+          id: string
+          is_active: boolean
+          is_verified: boolean
+          languages: string[] | null
+          latitude: number | null
+          longitude: number | null
+          rating: number | null
+          service_radius: number
+          total_reviews: number | null
+          total_walks: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          bio?: string | null
+          certifications?: string[] | null
+          city?: string | null
+          created_at?: string
+          experience_years?: number | null
+          hourly_rate?: number
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          languages?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          rating?: number | null
+          service_radius?: number
+          total_reviews?: number | null
+          total_walks?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          bio?: string | null
+          certifications?: string[] | null
+          city?: string | null
+          created_at?: string
+          experience_years?: number | null
+          hourly_rate?: number
+          id?: string
+          is_active?: boolean
+          is_verified?: boolean
+          languages?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
+          rating?: number | null
+          service_radius?: number
+          total_reviews?: number | null
+          total_walks?: number | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
