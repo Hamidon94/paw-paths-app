@@ -8,6 +8,9 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AddDog from "./pages/AddDog";
 import FindWalkers from "./pages/FindWalkers";
+import MyBookings from "./pages/MyBookings";
+import BookingDetails from "./pages/BookingDetails";
+import BookWalk from "./pages/BookWalk";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +27,9 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dogs/add" element={<AddDog />} />
           <Route path="/walkers" element={<FindWalkers />} />
+          <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/bookings/:id" element={<BookingDetails />} />
+          <Route path="/book/:walkerId" element={<BookWalk />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
