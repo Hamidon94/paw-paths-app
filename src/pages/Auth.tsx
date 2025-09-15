@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,24 +8,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from '@supabase/supabase-js';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 
 const Auth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [loginData, setLoginData] = useState({
-    email: '',
-    password: ''
-  });
+  // Form states
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
-  const [signupData, setSignupData] = useState({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: ''
-  });
+  const defaultTab = searchParams.get('mode') === 'walker' ? 'register' : 'login';
 
   useEffect(() => {
     // Set up auth state listener
@@ -59,8 +58,8 @@ const Auth = () => {
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email: loginData.email,
-        password: loginData.password,
+        email,
+        password,
       });
 
       if (error) {
@@ -72,10 +71,10 @@ const Auth = () => {
       } else {
         toast({
           title: "Connexion réussie",
-          description: "Bienvenue !",
+          description: "Vous êtes maintenant connecté",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erreur",
         description: "Une erreur inattendue s'est produite",
@@ -86,38 +85,46 @@ const Auth = () => {
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/dashboard`;
       
       const { error } = await supabase.auth.signUp({
-        email: signupData.email,
-        password: signupData.password,
+        email,
+        password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            first_name: signupData.firstName,
-            last_name: signupData.lastName,
+            first_name: firstName,
+            last_name: lastName
           }
         }
       });
 
       if (error) {
-        toast({
-          title: "Erreur d'inscription",
-          description: error.message,
-          variant: "destructive",
-        });
+        if (error.message.includes('already registered')) {
+          toast({
+            title: "Utilisateur existant",
+            description: "Cette adresse email est déjà utilisée. Essayez de vous connecter.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Erreur d'inscription",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Inscription réussie",
           description: "Vérifiez votre email pour confirmer votre compte",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erreur",
         description: "Une erreur inattendue s'est produite",
@@ -130,98 +137,186 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">DogWalking</CardTitle>
-          <CardDescription>
-            Connectez-vous ou créez votre compte
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Connexion</TabsTrigger>
-              <TabsTrigger value="signup">Inscription</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={loginData.email}
-                    onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Mot de passe</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={loginData.password}
-                    onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Connexion..." : "Se connecter"}
-                </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">Prénom</Label>
+      <div className="w-full max-w-md">
+        <div className="mb-6">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/')}
+            className="mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Retour à l'accueil
+          </Button>
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-primary mb-2">DogWalking</h1>
+            <p className="text-muted-foreground">
+              Connectez-vous ou créez votre compte
+            </p>
+          </div>
+        </div>
+
+        <Tabs defaultValue={defaultTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Connexion</TabsTrigger>
+            <TabsTrigger value="register">Inscription</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="login">
+            <Card>
+              <CardHeader>
+                <CardTitle>Se connecter</CardTitle>
+                <CardDescription>
+                  Connectez-vous à votre compte existant
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <Label htmlFor="login-email">Email</Label>
                     <Input
-                      id="firstName"
-                      value={signupData.firstName}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, firstName: e.target.value }))}
+                      id="login-email"
+                      type="email"
+                      placeholder="votre@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Nom</Label>
+                  
+                  <div>
+                    <Label htmlFor="login-password">Mot de passe</Label>
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Votre mot de passe"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Connexion..." : "Se connecter"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="register">
+            <Card>
+              <CardHeader>
+                <CardTitle>Créer un compte</CardTitle>
+                <CardDescription>
+                  Rejoignez notre communauté de propriétaires de chiens
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName">Prénom</Label>
+                      <Input
+                        id="firstName"
+                        placeholder="Prénom"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Nom</Label>
+                      <Input
+                        id="lastName"
+                        placeholder="Nom"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="register-email">Email</Label>
                     <Input
-                      id="lastName"
-                      value={signupData.lastName}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, lastName: e.target.value }))}
+                      id="register-email"
+                      type="email"
+                      placeholder="votre@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                   </div>
+                  
+                  <div>
+                    <Label htmlFor="register-password">Mot de passe</Label>
+                    <div className="relative">
+                      <Input
+                        id="register-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Choisissez un mot de passe"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        minLength={6}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Au moins 6 caractères
+                    </p>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Création..." : "Créer mon compte"}
+                  </Button>
+                </form>
+
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                  <p className="text-sm text-center text-muted-foreground">
+                    Vous êtes un promeneur professionnel ?
+                  </p>
+                  <Button 
+                    variant="link" 
+                    className="w-full mt-1" 
+                    onClick={() => navigate('/walker/register')}
+                  >
+                    Inscrivez-vous comme promeneur
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    value={signupData.email}
-                    onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Mot de passe</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={signupData.password}
-                    onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Inscription..." : "S'inscrire"}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

@@ -46,7 +46,7 @@ export const UserTypesSection = () => {
                   <p className="text-muted-foreground">Tarif à partir de 15€ les 30 minutes</p>
                 </div>
               </div>
-              <Button variant="sage" size="lg" className="w-full">
+              <Button variant="sage" size="lg" className="w-full" onClick={() => window.location.href = '/auth'}>
                 Trouver un promeneur
               </Button>
             </CardContent>
@@ -80,7 +80,7 @@ export const UserTypesSection = () => {
                   <p className="text-muted-foreground">Paiements sécurisés et réguliers</p>
                 </div>
               </div>
-              <Button variant="ocean" size="lg" className="w-full">
+              <Button variant="ocean" size="lg" className="w-full" onClick={() => window.location.href = '/auth?mode=walker'}>
                 Devenir promeneur
               </Button>
             </CardContent>
