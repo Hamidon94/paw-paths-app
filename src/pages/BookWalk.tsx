@@ -53,7 +53,16 @@ const BookWalk = () => {
     try {
       const { data, error } = await supabase
         .from('walkers')
-        .select('*')
+        .select(`
+          *,
+          users!inner(
+            first_name,
+            last_name,
+            email,
+            phone,
+            avatar_url
+          )
+        `)
         .eq('id', walkerId)
         .single();
 
@@ -62,8 +71,8 @@ const BookWalk = () => {
       setWalker({
         id: data.id,
         hourly_rate: data.hourly_rate,
-        first_name: 'Jean',
-        last_name: 'Dupont',
+        first_name: data.users.first_name,
+        last_name: data.users.last_name,
         rating: data.rating,
         bio: data.bio,
       });

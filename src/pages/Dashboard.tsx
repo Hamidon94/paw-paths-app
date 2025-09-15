@@ -8,13 +8,14 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from '@supabase/supabase-js';
 import { PlusCircle, Dog, MapPin, Calendar, LogOut } from 'lucide-react';
+import { useDogs } from '@/hooks/useDogs';
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [dogs, setDogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { dogs, loading: dogsLoading } = useDogs();
 
   useEffect(() => {
     // Set up auth state listener

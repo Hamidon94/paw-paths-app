@@ -20,10 +20,9 @@ const dogBreeds = [
 ];
 
 const dogSizes = [
-  { value: "small", label: "Petit (moins de 10kg)" },
-  { value: "medium", label: "Moyen (10-25kg)" },
-  { value: "large", label: "Grand (25-45kg)" },
-  { value: "giant", label: "Géant (plus de 45kg)" }
+  { value: "Petit", label: "Petit (moins de 10kg)" },
+  { value: "Moyen", label: "Moyen (10-25kg)" },
+  { value: "Grand", label: "Grand (25-45kg)" }
 ];
 
 const AddDog = () => {
@@ -98,25 +97,18 @@ const AddDog = () => {
 
       // Insert dog data
       const { error } = await supabase
-        .from('contacts') // Using contacts table as it seems to be for storing entities
+        .from('dogs')
         .insert({
           user_id: profile.id,
-          first_name: dogData.name,
-          raw_data: {
-            type: 'dog',
-            breed: dogData.breed,
-            age: parseInt(dogData.age),
-            size: dogData.size,
-            weight: dogData.weight ? parseFloat(dogData.weight) : null,
-            description: dogData.description,
-            medical_info: dogData.medical_info,
-            is_friendly_with_dogs: dogData.is_friendly_with_dogs,
-            is_friendly_with_children: dogData.is_friendly_with_children,
-            is_trained: dogData.is_trained,
-            needs_special_care: dogData.needs_special_care
-          },
-          photo_url: dogData.photo_url,
-          source: 'manual_entry'
+          name: dogData.name,
+          breed: dogData.breed,
+          age: parseInt(dogData.age),
+          size: dogData.size,
+          weight: dogData.weight ? parseFloat(dogData.weight) : null,
+          description: dogData.description,
+          medical_notes: dogData.medical_info,
+          behavior_notes: `Amical avec chiens: ${dogData.is_friendly_with_dogs}, Amical avec enfants: ${dogData.is_friendly_with_children}, Bien éduqué: ${dogData.is_trained}, Soins spéciaux: ${dogData.needs_special_care}`,
+          photo_url: dogData.photo_url
         });
 
       if (error) {

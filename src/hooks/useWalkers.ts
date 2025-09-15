@@ -19,67 +19,50 @@ export interface Walker {
   total_reviews: number;
   total_walks: number;
   certifications?: string[];
-  languages: string[];
+  languages?: string[];
   created_at: string;
   updated_at: string;
-  // Joined data from users table
-  first_name?: string;
-  last_name?: string;
-  email?: string;
+  // User info from joined table
+  user?: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone?: string;
+    avatar_url?: string;
+  };
 }
 
 export const useWalkers = () => {
   const [walkers, setWalkers] = useState<Walker[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchWalkers = async (filters?: {
-    city?: string;
-    maxDistance?: number;
-    userLat?: number;
-    userLng?: number;
-  }) => {
+  const fetchWalkers = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('walkers')
-        .select('*')
+        .select(`
+          *,
+          users!inner(
+            first_name,
+            last_name,
+            email,
+            phone,
+            avatar_url
+          )
+        `)
         .eq('is_active', true)
-        .eq('is_verified', true);
-
-      if (filters?.city) {
-        query = query.ilike('city', `%${filters.city}%`);
-      }
-
-      const { data, error } = await query.order('rating', { ascending: false });
+        .order('rating', { ascending: false });
 
       if (error) throw error;
 
-      // For now, return mock data for walker names
-      const walkersWithMockData = (data || []).map(walker => ({
+      const walkersWithUserData = (data || []).map((walker: any) => ({
         ...walker,
-        first_name: 'Jean',
-        last_name: 'Dupont',
-        email: 'test@example.com'
+        user: walker.users
       }));
 
-      // Filter by distance if coordinates are provided
-      let filteredWalkers = walkersWithMockData;
-      if (filters?.maxDistance && filters?.userLat && filters?.userLng) {
-        filteredWalkers = walkersWithMockData.filter(walker => {
-          if (!walker.latitude || !walker.longitude) return false;
-          
-          const distance = calculateDistance(
-            filters.userLat,
-            filters.userLng,
-            walker.latitude,
-            walker.longitude
-          );
-          
-          return distance <= filters.maxDistance;
-        });
-      }
-
-      setWalkers(filteredWalkers);
+      setWalkers(walkersWithUserData);
     } catch (error: any) {
+      console.error('Error fetching walkers:', error);
       toast({
         title: "Erreur",
         description: "Impossible de récupérer les promeneurs",
@@ -90,27 +73,142 @@ export const useWalkers = () => {
     }
   };
 
-  // Calculate distance between two coordinates using Haversine formula
-  const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  };
-
   useEffect(() => {
     fetchWalkers();
   }, []);
 
+  const createWalkerProfile = async (walkerData: {
+    bio?: string;
+    experience_years: number;
+    hourly_rate: number;
+    service_radius: number;
+    address?: string;
+    city?: string;
+    certifications?: string[];
+    languages?: string[];
+  }) => {
+    try {
+      // Get current user ID from users table
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_user_id', (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+      if (userError) throw userError;
+
+      const { data, error } = await supabase
+        .from('walkers')
+        .insert({
+          ...walkerData,
+          user_id: userData.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await fetchWalkers(); // Refresh the list
+      toast({
+        title: "Succès",
+        description: "Votre profil de promeneur a été créé avec succès",
+      });
+
+      return data;
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de créer le profil de promeneur",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const updateWalkerProfile = async (id: string, updates: Partial<Walker>) => {
+    try {
+      const { data, error } = await supabase
+        .from('walkers')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await fetchWalkers(); // Refresh the list
+      toast({
+        title: "Succès",
+        description: "Votre profil de promeneur a été mis à jour",
+      });
+
+      return data;
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de mettre à jour le profil",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const searchWalkers = async (filters: {
+    latitude?: number;
+    longitude?: number;
+    radius?: number;
+    minRating?: number;
+    maxRate?: number;
+  }) => {
+    try {
+      let query = supabase
+        .from('walkers')
+        .select(`
+          *,
+          users!inner(
+            first_name,
+            last_name,
+            email,
+            phone,
+            avatar_url
+          )
+        `)
+        .eq('is_active', true);
+
+      if (filters.minRating) {
+        query = query.gte('rating', filters.minRating);
+      }
+
+      if (filters.maxRate) {
+        query = query.lte('hourly_rate', filters.maxRate);
+      }
+
+      const { data, error } = await query.order('rating', { ascending: false });
+
+      if (error) throw error;
+
+      const walkersWithUserData = (data || []).map((walker: any) => ({
+        ...walker,
+        user: walker.users
+      }));
+
+      return walkersWithUserData;
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la recherche",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   return {
     walkers,
     loading,
-    fetchWalkers,
-    refetch: () => fetchWalkers()
+    createWalkerProfile,
+    updateWalkerProfile,
+    searchWalkers,
+    refetch: fetchWalkers
   };
 };

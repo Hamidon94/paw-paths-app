@@ -25,15 +25,33 @@ export const useDogs = () => {
 
   const fetchDogs = async () => {
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get user profile to get internal ID
+      const { data: profile } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .single();
+
+      if (!profile) {
+        setDogs([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('dogs')
         .select('*')
+        .eq('user_id', profile.id)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       setDogs(data || []);
     } catch (error: any) {
+      console.error('Error fetching dogs:', error);
       toast({
         title: "Erreur",
         description: "Impossible de récupérer vos chiens",

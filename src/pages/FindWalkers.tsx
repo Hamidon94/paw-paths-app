@@ -10,57 +10,15 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from '@supabase/supabase-js';
 import { ArrowLeft, MapPin, Star, Clock, Euro, Search } from 'lucide-react';
-
-// Mock data for walkers - in real app this would come from database
-const mockWalkers = [
-  {
-    id: 1,
-    name: "Marie Dubois",
-    photo: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face",
-    rating: 4.8,
-    reviews: 127,
-    distance: 0.8,
-    price: 15,
-    experience: "3 ans d'expérience",
-    specialties: ["Grands chiens", "Dressage", "Chiens anxieux"],
-    available: true,
-    bio: "Passionnée par les animaux depuis toujours, j'adore passer du temps avec vos compagnons !"
-  },
-  {
-    id: 2,
-    name: "Thomas Martin",
-    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    rating: 4.9,
-    reviews: 203,
-    distance: 1.2,
-    price: 18,
-    experience: "5 ans d'expérience",
-    specialties: ["Petits chiens", "Chiens âgés", "Promenades longues"],
-    available: true,
-    bio: "Ancien vétérinaire, je connais parfaitement les besoins de chaque animal."
-  },
-  {
-    id: 3,
-    name: "Sophie Leroy",
-    photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    rating: 4.7,
-    reviews: 89,
-    distance: 2.1,
-    price: 16,
-    experience: "2 ans d'expérience",
-    specialties: ["Chiots", "Socialisation", "Jeux"],
-    available: false,
-    bio: "Jeune diplômée en comportement animal, j'accompagne vos chiens avec bienveillance."
-  }
-];
+import { useWalkers } from '@/hooks/useWalkers';
 
 const FindWalkers = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [searchLocation, setSearchLocation] = useState('');
-  const [walkers, setWalkers] = useState(mockWalkers);
-  const [filteredWalkers, setFilteredWalkers] = useState(mockWalkers);
+  const [filteredWalkers, setFilteredWalkers] = useState<any[]>([]);
   const navigate = useNavigate();
+  const { walkers, loading: walkersLoading } = useWalkers();
 
   useEffect(() => {
     // Check authentication
@@ -88,28 +46,34 @@ const FindWalkers = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  useEffect(() => {
+    // Initialize filtered walkers when walkers data is loaded
+    if (walkers.length > 0) {
+      setFilteredWalkers(walkers);
+    }
+  }, [walkers]);
+
   const handleSearch = () => {
     if (!searchLocation.trim()) {
       setFilteredWalkers(walkers);
       return;
     }
 
-    // In a real app, this would be a proper location search
+    // Filter by name, city, or bio content
     const filtered = walkers.filter(walker => 
-      walker.name.toLowerCase().includes(searchLocation.toLowerCase()) ||
-      walker.specialties.some(specialty => 
-        specialty.toLowerCase().includes(searchLocation.toLowerCase())
-      )
+      (walker.user?.first_name + ' ' + walker.user?.last_name).toLowerCase().includes(searchLocation.toLowerCase()) ||
+      walker.city?.toLowerCase().includes(searchLocation.toLowerCase()) ||
+      walker.bio?.toLowerCase().includes(searchLocation.toLowerCase())
     );
     
     setFilteredWalkers(filtered);
   };
 
-  const handleBookWalker = (walkerId: number) => {
+  const handleBookWalker = (walkerId: string) => {
     navigate(`/book/${walkerId}`);
   };
 
-  if (!user) {
+  if (!user || walkersLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -189,49 +153,62 @@ const FindWalkers = () => {
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <Avatar className="h-16 w-16">
-                        <AvatarImage src={walker.photo} alt={walker.name} />
-                        <AvatarFallback>{walker.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        <AvatarImage src={walker.user?.avatar_url} alt={`${walker.user?.first_name} ${walker.user?.last_name}`} />
+                        <AvatarFallback>
+                          {walker.user?.first_name?.[0]}{walker.user?.last_name?.[0]}
+                        </AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <div>
-                            <h3 className="text-lg font-semibold">{walker.name}</h3>
-                            <p className="text-sm text-muted-foreground">{walker.experience}</p>
+                            <h3 className="text-lg font-semibold">
+                              {walker.user?.first_name} {walker.user?.last_name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {walker.experience_years} an{walker.experience_years > 1 ? 's' : ''} d'expérience
+                            </p>
                           </div>
                           <div className="text-right">
                             <div className="flex items-center mb-1">
                               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-                              <span className="font-medium">{walker.rating}</span>
+                              <span className="font-medium">{walker.rating.toFixed(1)}</span>
                               <span className="text-sm text-muted-foreground ml-1">
-                                ({walker.reviews})
+                                ({walker.total_reviews})
                               </span>
                             </div>
                             <div className="flex items-center text-sm text-muted-foreground">
                               <MapPin className="h-3 w-3 mr-1" />
-                              {walker.distance} km
+                              {walker.city || 'Paris'}
                             </div>
                           </div>
                         </div>
 
-                        <p className="text-sm text-muted-foreground mb-3">{walker.bio}</p>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {walker.bio || 'Promeneur expérimenté passionné par les animaux'}
+                        </p>
 
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {walker.specialties.map((specialty, index) => (
+                          {walker.certifications?.map((cert, index) => (
                             <Badge key={index} variant="secondary" className="text-xs">
-                              {specialty}
+                              {cert}
                             </Badge>
-                          ))}
+                          )) || (
+                            <>
+                              <Badge variant="secondary" className="text-xs">Promenades</Badge>
+                              <Badge variant="secondary" className="text-xs">Soins</Badge>
+                            </>
+                          )}
                         </div>
 
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
                             <div className="flex items-center">
                               <Euro className="h-4 w-4 mr-1" />
-                              <span className="font-medium">{walker.price}€</span>
-                              <span className="text-sm text-muted-foreground ml-1">/30min</span>
+                              <span className="font-medium">{walker.hourly_rate}€</span>
+                              <span className="text-sm text-muted-foreground ml-1">/heure</span>
                             </div>
-                            {walker.available ? (
+                            {walker.is_active ? (
                               <Badge variant="default" className="bg-green-100 text-green-800">
                                 <Clock className="h-3 w-3 mr-1" />
                                 Disponible
@@ -249,7 +226,7 @@ const FindWalkers = () => {
                             </Button>
                             <Button 
                               size="sm" 
-                              disabled={!walker.available}
+                              disabled={!walker.is_active}
                               onClick={() => handleBookWalker(walker.id)}
                             >
                               Réserver

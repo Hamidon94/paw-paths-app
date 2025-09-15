@@ -13,6 +13,7 @@ import BookingDetails from "./pages/BookingDetails";
 import BookWalk from "./pages/BookWalk";
 import WalkerRegister from "./pages/WalkerRegister";
 import WalkerDashboard from "./pages/WalkerDashboard";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/book/:walkerId" element={<BookWalk />} />
           <Route path="/walker/register" element={<WalkerRegister />} />
           <Route path="/walker/dashboard" element={<WalkerDashboard />} />
+          <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

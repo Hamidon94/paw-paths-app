@@ -15,4 +15,24 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Code splitting optimization
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs', '@radix-ui/react-select'],
+          'supabase': ['@supabase/supabase-js'],
+          'query': ['@tanstack/react-query'],
+          'date': ['date-fns'],
+          'form': ['react-hook-form', '@hookform/resolvers', 'zod'],
+        }
+      }
+    },
+    // Reduce chunk size warning limit
+    chunkSizeWarningLimit: 800,
+    // Enable sourcemaps for debugging
+    sourcemap: mode === 'development'
+  }
 }));
