@@ -55,7 +55,7 @@ const BookWalk = () => {
         .from('walkers')
         .select(`
           *,
-          users!inner(
+          users!walkers_user_id_fkey(
             first_name,
             last_name,
             email,
@@ -68,13 +68,16 @@ const BookWalk = () => {
 
       if (error) throw error;
 
+      // Type assertion since we know the structure
+      const walkerData = data as any;
+      
       setWalker({
-        id: data.id,
-        hourly_rate: data.hourly_rate,
-        first_name: data.users.first_name,
-        last_name: data.users.last_name,
-        rating: data.rating,
-        bio: data.bio,
+        id: walkerData.id,
+        hourly_rate: walkerData.hourly_rate,
+        first_name: walkerData.users?.first_name || '',
+        last_name: walkerData.users?.last_name || '',
+        rating: walkerData.rating,
+        bio: walkerData.bio,
       });
     } catch (error: any) {
       toast({

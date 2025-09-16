@@ -646,37 +646,49 @@ export type Database = {
       }
       users: {
         Row: {
+          address: string | null
           auth_user_id: string | null
+          avatar_url: string | null
+          city: string | null
           contact_limit: number | null
           created_at: string
           email: string
           first_name: string | null
           id: string
           last_name: string | null
+          phone: string | null
           subscription_end_date: string | null
           total_contacts_imported: number | null
           updated_at: string
         }
         Insert: {
+          address?: string | null
           auth_user_id?: string | null
+          avatar_url?: string | null
+          city?: string | null
           contact_limit?: number | null
           created_at?: string
           email: string
           first_name?: string | null
           id?: string
           last_name?: string | null
+          phone?: string | null
           subscription_end_date?: string | null
           total_contacts_imported?: number | null
           updated_at?: string
         }
         Update: {
+          address?: string | null
           auth_user_id?: string | null
+          avatar_url?: string | null
+          city?: string | null
           contact_limit?: number | null
           created_at?: string
           email?: string
           first_name?: string | null
           id?: string
           last_name?: string | null
+          phone?: string | null
           subscription_end_date?: string | null
           total_contacts_imported?: number | null
           updated_at?: string
