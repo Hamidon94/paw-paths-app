@@ -39,10 +39,16 @@ const FindWalkers = () => {
 
   const fetchWalkers = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('walkers')
         .select(`
-          *,
+          id,
+          hourly_rate,
+          rating,
+          bio,
+          city,
+          experience_years,
+          is_verified,
           users!walkers_user_id_fkey(
             first_name,
             last_name,
@@ -51,26 +57,45 @@ const FindWalkers = () => {
         `)
         .eq('is_active', true);
 
+      if (error) {
+        console.error('Fetch walkers error:', error);
+        throw error;
+      }
+
+      // Transform the data to match our Walker interface
+      let transformedWalkers = (data || []).map(walker => ({
+        id: walker.id,
+        hourly_rate: walker.hourly_rate,
+        rating: walker.rating,
+        bio: walker.bio,
+        city: walker.city,
+        experience_years: walker.experience_years,
+        is_verified: walker.is_verified,
+        users: {
+          first_name: walker.users?.first_name,
+          last_name: walker.users?.last_name,
+          avatar_url: walker.users?.avatar_url,
+        }
+      }));
+
       // Apply price filter
       if (priceRange !== 'all') {
         const [min, max] = priceRange.split('-').map(Number);
-        query = query.gte('hourly_rate', min).lte('hourly_rate', max);
+        transformedWalkers = transformedWalkers.filter(walker => 
+          walker.hourly_rate >= min && walker.hourly_rate <= max
+        );
       }
 
       // Apply sorting
       if (sortBy === 'rating') {
-        query = query.order('rating', { ascending: false });
+        transformedWalkers.sort((a, b) => b.rating - a.rating);
       } else if (sortBy === 'price_low') {
-        query = query.order('hourly_rate', { ascending: true });
+        transformedWalkers.sort((a, b) => a.hourly_rate - b.hourly_rate);
       } else if (sortBy === 'price_high') {
-        query = query.order('hourly_rate', { ascending: false });
+        transformedWalkers.sort((a, b) => b.hourly_rate - a.hourly_rate);
       }
 
-      const { data, error } = await query;
-
-      if (error) throw error;
-
-      setWalkers(data || []);
+      setWalkers(transformedWalkers);
     } catch (error: any) {
       toast({
         title: "Erreur",
