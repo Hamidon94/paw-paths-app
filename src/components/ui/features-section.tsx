@@ -8,8 +8,8 @@ export const FeaturesSection = () => {
       icon: "🛡️"
     },
     {
-      title: "Géolocalisation en temps réel",
-      description: "Suivez la promenade de votre chien en direct grâce au GPS intégré.",
+      title: "Suivi des promenades",
+      description: "Recevez des mises à jour sur la promenade de votre chien.",
       icon: "📍"
     },
     {
@@ -28,9 +28,9 @@ export const FeaturesSection = () => {
       icon: "⭐"
     },
     {
-      title: "Support 24/7",
-      description: "Notre équipe est disponible pour vous accompagner à tout moment.",
-      icon: "🎧"
+      title: "Réservation flexible",
+      description: "Planifiez vos promenades selon vos besoins et disponibilités.",
+      icon: "🗓️"
     }
   ];
 

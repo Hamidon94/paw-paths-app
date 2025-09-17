@@ -28,10 +28,10 @@ export const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button variant="hero" size="lg" className="text-lg px-8 py-4 h-auto" onClick={() => window.location.href = '/auth'}>
+            <Button variant="hero" size="lg" className="text-lg px-8 py-4 h-auto" onClick={() => window.location.href = '/auth?type=owner'}>
               Réserver une promenade
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-4 h-auto bg-white/10 border-white/30 text-white hover:bg-white/20" onClick={() => window.location.href = '/auth'}>
+            <Button variant="outline" size="lg" className="text-lg px-8 py-4 h-auto bg-white/10 border-white/30 text-white hover:bg-white/20" onClick={() => window.location.href = '/walker/register'}>
               Devenir promeneur
             </Button>
           </div>
@@ -47,7 +47,7 @@ export const HeroSection = () => {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-sage rounded-full"></div>
-              <span>Suivi en temps réel</span>
+              <span>Réservation simple</span>
             </div>
           </div>
         </div>

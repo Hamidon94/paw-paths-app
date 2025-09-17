@@ -30,7 +30,7 @@ export const Header = () => {
           <Button variant="ghost" size="sm" onClick={() => window.location.href = '/auth'}>
             Connexion
           </Button>
-          <Button variant="hero" size="sm" onClick={() => window.location.href = '/auth'}>
+          <Button variant="hero" size="sm" onClick={() => window.location.href = '/auth?type=owner'}>
             S'inscrire
           </Button>
         </div>

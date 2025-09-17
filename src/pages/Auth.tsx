@@ -24,7 +24,7 @@ const Auth = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
-  const defaultTab = searchParams.get('mode') === 'walker' ? 'register' : 'login';
+  const defaultTab = searchParams.get('type') === 'owner' ? 'register' : 'login';
 
   useEffect(() => {
     // Set up auth state listener
@@ -224,7 +224,7 @@ const Auth = () => {
               <CardHeader>
                 <CardTitle>Créer un compte</CardTitle>
                 <CardDescription>
-                  Rejoignez notre communauté de propriétaires de chiens
+                  {searchParams.get('type') === 'owner' ? 'Créez votre compte propriétaire' : 'Rejoignez notre communauté'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
