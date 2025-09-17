@@ -3,33 +3,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export const FeaturesSection = () => {
   const features = [
     {
-      title: "Promeneurs vérifiés",
-      description: "Tous nos promeneurs sont contrôlés et validés pour assurer la sécurité de votre compagnon.",
+      title: "Promeneurs certifiés",
+      description: "Vérification d'identité, casier judiciaire et assurance responsabilité civile pour tous nos promeneurs.",
       icon: "🛡️"
     },
     {
-      title: "Suivi des promenades",
-      description: "Recevez des mises à jour sur la promenade de votre chien.",
+      title: "Suivi géolocalisé", 
+      description: "Recevez photos et localisation en temps réel pendant la promenade pour votre tranquillité.",
       icon: "📍"
     },
     {
-      title: "Réservation simple",
-      description: "Réservez en quelques clics selon vos disponibilités et votre zone.",
+      title: "Réservation instantanée",
+      description: "Trouvez et réservez un promeneur disponible en quelques clics selon votre zone.",
       icon: "📱"
     },
     {
-      title: "Paiement sécurisé",
-      description: "Transactions sécurisées avec Stripe, remboursement garanti.",
+      title: "Paiement 100% sécurisé",
+      description: "Transactions protégées, pas de paiement en espèces, remboursement garanti.",
       icon: "💳"
     },
     {
-      title: "Avis et notations",
-      description: "Consultez les avis des autres propriétaires pour choisir le meilleur promeneur.",
+      title: "Avis clients vérifiés",
+      description: "Consultez les vrais avis et notes des propriétaires pour choisir en confiance.",
       icon: "⭐"
     },
     {
-      title: "Réservation flexible",
-      description: "Planifiez vos promenades selon vos besoins et disponibilités.",
+      title: "Service 7j/7",
+      description: "Disponibilité tous les jours de la semaine, même le weekend et jours fériés.",
       icon: "🗓️"
     }
   ];
