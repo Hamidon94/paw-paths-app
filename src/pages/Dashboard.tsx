@@ -196,12 +196,12 @@ const Dashboard = () => {
           </Button>
           
           <Button 
-            onClick={() => navigate('/walker/register')} 
+            onClick={() => navigate('/profile')} 
             variant="outline" 
             className="h-20 flex-col space-y-2"
           >
-            <Star className="h-6 w-6" />
-            <span>Devenir promeneur</span>
+            <Settings className="h-6 w-6" />
+            <span>Mon profil</span>
           </Button>
         </div>
 

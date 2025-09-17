@@ -342,12 +342,54 @@ const WalkerRegister = () => {
           {step === 2 && (
             <Card>
               <CardHeader>
-                <CardTitle>Certifications et compétences</CardTitle>
+                <CardTitle>Vérifications et documents</CardTitle>
                 <CardDescription>
-                  Ajoutez vos certifications pour rassurer les propriétaires
+                  Documents requis pour valider votre profil de promeneur
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <h4 className="font-medium text-blue-900 mb-2">Documents obligatoires</h4>
+                  <p className="text-sm text-blue-700">
+                    Les documents suivants sont requis pour finaliser votre inscription en tant que promeneur professionnel.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-medium">Carte d'identité</h5>
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">Obligatoire</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Pièce d'identité valide (CNI, passeport ou permis de conduire)
+                    </p>
+                    <Input type="file" accept=".jpg,.jpeg,.png,.pdf" />
+                  </div>
+
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-medium">Casier judiciaire</h5>
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">Obligatoire</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Extrait de casier judiciaire vierge (bulletin n°3)
+                    </p>
+                    <Input type="file" accept=".jpg,.jpeg,.png,.pdf" />
+                  </div>
+
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h5 className="font-medium">Attestation d'assurance</h5>
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">Obligatoire</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Assurance responsabilité civile professionnelle
+                    </p>
+                    <Input type="file" accept=".jpg,.jpeg,.png,.pdf" />
+                  </div>
+                </div>
+
                 <div>
                   <Label>Certifications (optionnel)</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">

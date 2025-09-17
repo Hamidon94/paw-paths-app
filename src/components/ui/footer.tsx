@@ -14,20 +14,20 @@ export const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Pour les propriétaires</h3>
+            <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2 text-white/80">
-              <li><a href="/auth?type=owner" className="hover:text-white transition-colors">Trouver un promeneur</a></li>
-              <li><a href="#comment-ca-marche" className="hover:text-white transition-colors">Comment ça marche</a></li>
-              <li><a href="#tarifs" className="hover:text-white transition-colors">Tarifs</a></li>
+              <li><a href="/auth?type=owner" className="hover:text-white transition-colors">Réserver une promenade</a></li>
+              <li><a href="/auth" className="hover:text-white transition-colors">Connexion</a></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Pour les promeneurs</h3>
+            <h3 className="font-semibold mb-4">Informations</h3>
             <ul className="space-y-2 text-white/80">
-              <li><a href="/walker/register" className="hover:text-white transition-colors">Devenir promeneur</a></li>
-              <li><a href="#contact" className="hover:text-white transition-colors">Nous contacter</a></li>
-              <li><a href="/auth" className="hover:text-white transition-colors">Connexion</a></li>
+              <li><span className="hover:text-white transition-colors">Tarifs dès 15€ / 30min</span></li>
+              <li><span className="hover:text-white transition-colors">Promeneurs vérifiés</span></li>
+              <li><span className="hover:text-white transition-colors">Paiement sécurisé</span></li>
+              <li><span className="hover:text-white transition-colors">Service 7j/7</span></li>
             </ul>
           </div>
         </div>
