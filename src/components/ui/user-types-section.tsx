@@ -43,7 +43,7 @@ export const UserTypesSection = () => {
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-sage rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Tarif à partir de 15€ les 30 minutes</p>
+                  <p className="text-muted-foreground">Tarifs à partir de 7€ les 30 minutes</p>
                 </div>
               </div>
               <Button variant="sage" size="lg" className="w-full" onClick={() => window.location.href = '/auth?type=owner'}>

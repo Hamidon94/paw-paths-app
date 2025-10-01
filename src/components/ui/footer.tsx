@@ -16,29 +16,23 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2 text-white/80">
-              <li><a href="/auth?type=owner" className="hover:text-white transition-colors">Réserver une promenade</a></li>
+              <li><a href="/auth?type=owner" className="hover:text-white transition-colors">Souscription propriétaires</a></li>
               <li><a href="/walker/register" className="hover:text-white transition-colors">Devenir promeneur</a></li>
               <li><a href="/auth" className="hover:text-white transition-colors">Connexion</a></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Nos Tarifs</h3>
+            <h3 className="font-semibold mb-4">Tarifs</h3>
             <ul className="space-y-2 text-white/80">
-              <li><a href="/tarifs" className="hover:text-white transition-colors">Promenade 30min : 7€</a></li>
-              <li><a href="/tarifs" className="hover:text-white transition-colors">Promenade 60min : 13€</a></li>
-              <li><a href="/tarifs" className="hover:text-white transition-colors">Visite à domicile : dès 19€</a></li>
-              <li><a href="/tarifs" className="hover:text-white transition-colors">Garde 24h : 31€</a></li>
+              <li><a href="/tarifs" className="hover:text-white transition-colors">Voir tous nos tarifs</a></li>
             </ul>
           </div>
           
           <div>
             <h3 className="font-semibold mb-4">Sécurité & Confiance</h3>
             <ul className="space-y-2 text-white/80">
-              <li><a href="/securite" className="hover:text-white transition-colors">Promeneurs certifiés</a></li>
-              <li><a href="/securite" className="hover:text-white transition-colors">Vérification identité</a></li>
-              <li><a href="/securite" className="hover:text-white transition-colors">Casier judiciaire vérifié</a></li>
-              <li><a href="/securite" className="hover:text-white transition-colors">Assurance incluse</a></li>
+              <li><a href="/securite" className="hover:text-white transition-colors">Notre engagement sécurité</a></li>
             </ul>
           </div>
         </div>

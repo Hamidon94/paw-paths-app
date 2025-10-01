@@ -24,6 +24,9 @@ const Auth = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
+  const [userType, setUserType] = useState<'owner' | 'walker'>(
+    searchParams.get('type') === 'walker' ? 'walker' : 'owner'
+  );
 
   const defaultTab = searchParams.get('type') === 'owner' ? 'register' : 'login';
 
@@ -101,7 +104,8 @@ const Auth = () => {
           data: {
             first_name: firstName,
             last_name: lastName,
-            phone: phone
+            phone: phone,
+            user_type: userType
           }
         }
       });
@@ -226,11 +230,47 @@ const Auth = () => {
               <CardHeader>
                 <CardTitle>Créer un compte</CardTitle>
                 <CardDescription>
-                  {searchParams.get('type') === 'owner' ? 'Créez votre compte propriétaire' : 'Rejoignez notre communauté'}
+                  Rejoignez notre communauté de passionnés de chiens
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleRegister} className="space-y-4">
+                  {/* User Type Selection */}
+                  <div className="space-y-2">
+                    <Label>Je suis</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setUserType('owner')}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          userType === 'owner'
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="text-3xl mb-2">🐕</div>
+                        <div className="font-semibold">Propriétaire</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Je cherche un promeneur
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setUserType('walker')}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          userType === 'walker'
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="text-3xl mb-2">🚶</div>
+                        <div className="font-semibold">Promeneur</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Je veux promener des chiens
+                        </div>
+                      </button>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">Prénom</Label>
@@ -310,22 +350,15 @@ const Auth = () => {
                   </div>
 
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Création..." : "Créer mon compte"}
+                    {loading ? "Création..." : `Créer mon compte ${userType === 'owner' ? 'propriétaire' : 'promeneur'}`}
                   </Button>
+                  
+                  {userType === 'walker' && (
+                    <p className="text-xs text-center text-muted-foreground mt-2">
+                      Après inscription, vous devrez compléter votre profil de promeneur avec vos certifications et disponibilités.
+                    </p>
+                  )}
                 </form>
-
-                <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-                  <p className="text-sm text-center text-muted-foreground">
-                    Vous êtes un promeneur professionnel ?
-                  </p>
-                  <Button 
-                    variant="link" 
-                    className="w-full mt-1" 
-                    onClick={() => navigate('/walker/register')}
-                  >
-                    Inscrivez-vous comme promeneur
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
