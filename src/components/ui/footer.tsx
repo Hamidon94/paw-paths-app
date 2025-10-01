@@ -23,24 +23,22 @@ export const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Tarifs & Sécurité</h3>
+            <h3 className="font-semibold mb-4">Nos Tarifs</h3>
             <ul className="space-y-2 text-white/80">
-              <li><span className="hover:text-white transition-colors">Promenades dès 15€ / 30min</span></li>
-              <li><span className="hover:text-white transition-colors">Promeneurs certifiés</span></li>
-              <li><span className="hover:text-white transition-colors">Vérification identité</span></li>
-              <li><span className="hover:text-white transition-colors">Casier judiciaire vérifié</span></li>
-              <li><span className="hover:text-white transition-colors">Assurance incluse</span></li>
+              <li><a href="/tarifs" className="hover:text-white transition-colors">Promenade 30min : 7€</a></li>
+              <li><a href="/tarifs" className="hover:text-white transition-colors">Promenade 60min : 13€</a></li>
+              <li><a href="/tarifs" className="hover:text-white transition-colors">Visite à domicile : dès 19€</a></li>
+              <li><a href="/tarifs" className="hover:text-white transition-colors">Garde 24h : 31€</a></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Pourquoi nous choisir</h3>
+            <h3 className="font-semibold mb-4">Sécurité & Confiance</h3>
             <ul className="space-y-2 text-white/80">
-              <li><span className="hover:text-white transition-colors">Service 7j/7 disponible</span></li>
-              <li><span className="hover:text-white transition-colors">Géolocalisation en temps réel</span></li>
-              <li><span className="hover:text-white transition-colors">Paiement 100% sécurisé</span></li>
-              <li><span className="hover:text-white transition-colors">Photos de la promenade</span></li>
-              <li><span className="hover:text-white transition-colors">Support client réactif</span></li>
+              <li><a href="/securite" className="hover:text-white transition-colors">Promeneurs certifiés</a></li>
+              <li><a href="/securite" className="hover:text-white transition-colors">Vérification identité</a></li>
+              <li><a href="/securite" className="hover:text-white transition-colors">Casier judiciaire vérifié</a></li>
+              <li><a href="/securite" className="hover:text-white transition-colors">Assurance incluse</a></li>
             </ul>
           </div>
         </div>

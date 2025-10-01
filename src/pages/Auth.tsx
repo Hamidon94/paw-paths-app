@@ -23,6 +23,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
 
   const defaultTab = searchParams.get('type') === 'owner' ? 'register' : 'login';
 
@@ -99,7 +100,8 @@ const Auth = () => {
           emailRedirectTo: redirectUrl,
           data: {
             first_name: firstName,
-            last_name: lastName
+            last_name: lastName,
+            phone: phone
           }
         }
       });
@@ -260,6 +262,18 @@ const Auth = () => {
                       placeholder="votre@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="register-phone">Téléphone</Label>
+                    <Input
+                      id="register-phone"
+                      type="tel"
+                      placeholder="06 12 34 56 78"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       required
                     />
                   </div>

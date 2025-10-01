@@ -294,8 +294,13 @@ const BookWalk = () => {
                   </div>
 
                   <Button type="submit" className="w-full" disabled={submitting}>
-                    {submitting ? "Réservation en cours..." : `Réserver pour ${calculatePrice().toFixed(2)}€`}
+                    {submitting ? "Réservation en cours..." : `Confirmer la réservation - ${calculatePrice().toFixed(2)}€`}
                   </Button>
+                  
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    En cliquant sur "Confirmer", vous envoyez votre demande de réservation au promeneur. 
+                    Le paiement sera effectué après validation de votre demande.
+                  </p>
                 </form>
               </CardContent>
             </Card>
