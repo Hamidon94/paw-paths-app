@@ -18,6 +18,7 @@ export const Footer = () => {
             <ul className="space-y-2 text-white/80">
               <li><a href="/auth?type=owner" className="hover:text-white transition-colors">Souscription propriétaires</a></li>
               <li><a href="/walker/register" className="hover:text-white transition-colors">Devenir promeneur</a></li>
+              <li><a href="/blog" className="hover:text-white transition-colors">Blog</a></li>
               <li><a href="/auth" className="hover:text-white transition-colors">Connexion</a></li>
             </ul>
           </div>
@@ -42,10 +43,14 @@ export const Footer = () => {
             <p className="text-white/60 mb-4 md:mb-0">
               © 2024 DogWalking. Tous droits réservés.
             </p>
-            <div className="flex space-x-6 text-white/60">
-              <span>Conditions d'utilisation</span>
-              <span>Politique de confidentialité</span>
-              <span>Contact: contact@dogwalking.fr</span>
+            <div className="flex flex-wrap gap-4 text-white/60 text-sm">
+              <a href="/mentions-legales" className="hover:text-white transition-colors">Mentions légales</a>
+              <span>•</span>
+              <a href="/cgu" className="hover:text-white transition-colors">CGU/CGV</a>
+              <span>•</span>
+              <a href="/confidentialite" className="hover:text-white transition-colors">Politique de confidentialité</a>
+              <span>•</span>
+              <a href="mailto:contact@dogwalking.fr" className="hover:text-white transition-colors">Contact: contact@dogwalking.fr</a>
             </div>
           </div>
         </div>

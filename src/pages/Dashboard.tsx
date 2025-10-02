@@ -196,12 +196,12 @@ const Dashboard = () => {
           </Button>
           
           <Button 
-            onClick={() => navigate('/profile')} 
+            onClick={() => navigate('/messages')} 
             variant="outline" 
             className="h-20 flex-col space-y-2"
           >
             <Settings className="h-6 w-6" />
-            <span>Mon profil</span>
+            <span>Messagerie</span>
           </Button>
         </div>
 

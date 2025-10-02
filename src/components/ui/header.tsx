@@ -12,17 +12,17 @@ export const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#comment-ca-marche" className="text-sm hover:text-primary transition-colors">
+          <a href="/#comment-ca-marche" className="text-sm hover:text-primary transition-colors">
             Comment ça marche
           </a>
-          <a href="#tarifs" className="text-sm hover:text-primary transition-colors">
+          <a href="/tarifs" className="text-sm hover:text-primary transition-colors">
             Tarifs
           </a>
-          <a href="#promeneurs" className="text-sm hover:text-primary transition-colors">
-            Nos promeneurs
+          <a href="/blog" className="text-sm hover:text-primary transition-colors">
+            Blog
           </a>
-          <a href="#contact" className="text-sm hover:text-primary transition-colors">
-            Contact
+          <a href="/securite" className="text-sm hover:text-primary transition-colors">
+            Sécurité
           </a>
         </nav>
         

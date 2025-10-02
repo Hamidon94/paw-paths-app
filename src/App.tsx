@@ -16,6 +16,8 @@ import WalkerDashboard from "./pages/WalkerDashboard";
 import Profile from "./pages/Profile";
 import Tarifs from "./pages/Tarifs";
 import Securite from "./pages/Securite";
+import Messages from "./pages/Messages";
+import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/tarifs" element={<Tarifs />} />
           <Route path="/securite" element={<Securite />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/blog" element={<Blog />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

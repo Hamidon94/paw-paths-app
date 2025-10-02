@@ -14,6 +14,15 @@ export default {
     },
     extend: {
       colors: {
+        sage: {
+          DEFAULT: "hsl(var(--sage-green))",
+          light: "hsl(var(--sage-green-light))",
+        },
+        ocean: {
+          DEFAULT: "hsl(var(--ocean-blue))",
+          light: "hsl(var(--ocean-blue-light))",
+        },
+        earthy: "hsl(var(--earthy-brown))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
