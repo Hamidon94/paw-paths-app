@@ -79,11 +79,140 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_locations: {
+        Row: {
+          accuracy: number | null
+          booking_id: string
+          id: string
+          latitude: number
+          longitude: number
+          recorded_at: string
+        }
+        Insert: {
+          accuracy?: number | null
+          booking_id: string
+          id?: string
+          latitude: number
+          longitude: number
+          recorded_at?: string
+        }
+        Update: {
+          accuracy?: number | null
+          booking_id?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          recorded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_locations_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_media: {
+        Row: {
+          booking_id: string
+          caption: string | null
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          media_type: string
+          media_url: string
+        }
+        Insert: {
+          booking_id: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          media_type: string
+          media_url: string
+        }
+        Update: {
+          booking_id?: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          media_type?: string
+          media_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_media_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_reports: {
+        Row: {
+          behavior_notes: string | null
+          booking_id: string
+          distance_km: number | null
+          duration_actual_minutes: number | null
+          generated_at: string
+          health_notes: string | null
+          id: string
+          incidents: string | null
+          walker_id: string
+        }
+        Insert: {
+          behavior_notes?: string | null
+          booking_id: string
+          distance_km?: number | null
+          duration_actual_minutes?: number | null
+          generated_at?: string
+          health_notes?: string | null
+          id?: string
+          incidents?: string | null
+          walker_id: string
+        }
+        Update: {
+          behavior_notes?: string | null
+          booking_id?: string
+          distance_km?: number | null
+          duration_actual_minutes?: number | null
+          generated_at?: string
+          health_notes?: string | null
+          id?: string
+          incidents?: string | null
+          walker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_reports_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_reports_walker_id_fkey"
+            columns: ["walker_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
+          additional_30min_slots: number | null
           booking_date: string
           cancellation_reason: string | null
           cancelled_at: string | null
+          cancelled_by: string | null
           client_user_id: string
           commission_amount: number
           commission_rate: number
@@ -91,11 +220,13 @@ export type Database = {
           created_at: string
           dog_id: string
           duration_minutes: number
+          end_time: string | null
           id: string
           payment_status: string
           pickup_address: string
           pickup_latitude: number | null
           pickup_longitude: number | null
+          service_type: string
           special_instructions: string | null
           start_time: string
           started_at: string | null
@@ -103,14 +234,17 @@ export type Database = {
           stripe_payment_intent_id: string | null
           total_price: number
           updated_at: string
+          walk_photos: string[] | null
           walker_amount: number
           walker_id: string
           walker_notes: string | null
         }
         Insert: {
+          additional_30min_slots?: number | null
           booking_date: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
+          cancelled_by?: string | null
           client_user_id: string
           commission_amount: number
           commission_rate?: number
@@ -118,11 +252,13 @@ export type Database = {
           created_at?: string
           dog_id: string
           duration_minutes?: number
+          end_time?: string | null
           id?: string
           payment_status?: string
           pickup_address: string
           pickup_latitude?: number | null
           pickup_longitude?: number | null
+          service_type?: string
           special_instructions?: string | null
           start_time: string
           started_at?: string | null
@@ -130,14 +266,17 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           total_price: number
           updated_at?: string
+          walk_photos?: string[] | null
           walker_amount: number
           walker_id: string
           walker_notes?: string | null
         }
         Update: {
+          additional_30min_slots?: number | null
           booking_date?: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
+          cancelled_by?: string | null
           client_user_id?: string
           commission_amount?: number
           commission_rate?: number
@@ -145,11 +284,13 @@ export type Database = {
           created_at?: string
           dog_id?: string
           duration_minutes?: number
+          end_time?: string | null
           id?: string
           payment_status?: string
           pickup_address?: string
           pickup_latitude?: number | null
           pickup_longitude?: number | null
+          service_type?: string
           special_instructions?: string | null
           start_time?: string
           started_at?: string | null
@@ -157,6 +298,7 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           total_price?: number
           updated_at?: string
+          walk_photos?: string[] | null
           walker_amount?: number
           walker_id?: string
           walker_notes?: string | null
@@ -406,6 +548,27 @@ export type Database = {
           },
         ]
       }
+      favorite_walkers: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+          walker_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+          walker_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+          walker_id?: string
+        }
+        Relationships: []
+      }
       images: {
         Row: {
           created_at: string | null
@@ -438,6 +601,105 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          booking_id: string | null
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message_text: string
+          receiver_user_id: string
+          sender_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_text: string
+          receiver_user_id: string
+          sender_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_text?: string
+          receiver_user_id?: string
+          sender_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_receiver_user_id_fkey"
+            columns: ["receiver_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_user_id_fkey"
+            columns: ["sender_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          related_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type: string
+          related_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          related_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -603,6 +865,138 @@ export type Database = {
           },
         ]
       }
+      tips: {
+        Row: {
+          amount: number
+          booking_id: string
+          client_user_id: string
+          created_at: string
+          id: string
+          stripe_payment_intent_id: string | null
+          walker_id: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          client_user_id: string
+          created_at?: string
+          id?: string
+          stripe_payment_intent_id?: string | null
+          walker_id: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          client_user_id?: string
+          created_at?: string
+          id?: string
+          stripe_payment_intent_id?: string | null
+          walker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tips_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tips_client_user_id_fkey"
+            columns: ["client_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tips_walker_id_fkey"
+            columns: ["walker_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_auth_status: {
+        Row: {
+          approval_date: string | null
+          auth_user_id: string
+          created_at: string | null
+          email_verified: boolean | null
+          id: string
+          profile_approved: boolean | null
+          profile_completed: boolean | null
+          registration_date: string | null
+          updated_at: string | null
+          user_type: string
+        }
+        Insert: {
+          approval_date?: string | null
+          auth_user_id: string
+          created_at?: string | null
+          email_verified?: boolean | null
+          id?: string
+          profile_approved?: boolean | null
+          profile_completed?: boolean | null
+          registration_date?: string | null
+          updated_at?: string | null
+          user_type?: string
+        }
+        Update: {
+          approval_date?: string | null
+          auth_user_id?: string
+          created_at?: string | null
+          email_verified?: boolean | null
+          id?: string
+          profile_approved?: boolean | null
+          profile_completed?: boolean | null
+          registration_date?: string | null
+          updated_at?: string | null
+          user_type?: string
+        }
+        Relationships: []
+      }
+      user_documents: {
+        Row: {
+          document_type: string
+          document_url: string
+          id: string
+          uploaded_at: string
+          user_id: string
+          verified: boolean
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          document_type: string
+          document_url: string
+          id?: string
+          uploaded_at?: string
+          user_id: string
+          verified?: boolean
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          document_type?: string
+          document_url?: string
+          id?: string
+          uploaded_at?: string
+          user_id?: string
+          verified?: boolean
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_settings: {
         Row: {
           auto_backup: boolean | null
@@ -647,6 +1041,8 @@ export type Database = {
       users: {
         Row: {
           address: string | null
+          agreement_accepted: boolean | null
+          agreement_date: string | null
           auth_user_id: string | null
           avatar_url: string | null
           city: string | null
@@ -655,6 +1051,8 @@ export type Database = {
           email: string
           first_name: string | null
           id: string
+          id_card_url: string | null
+          id_card_verified: boolean | null
           last_name: string | null
           phone: string | null
           subscription_end_date: string | null
@@ -663,6 +1061,8 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          agreement_accepted?: boolean | null
+          agreement_date?: string | null
           auth_user_id?: string | null
           avatar_url?: string | null
           city?: string | null
@@ -671,6 +1071,8 @@ export type Database = {
           email: string
           first_name?: string | null
           id?: string
+          id_card_url?: string | null
+          id_card_verified?: boolean | null
           last_name?: string | null
           phone?: string | null
           subscription_end_date?: string | null
@@ -679,6 +1081,8 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          agreement_accepted?: boolean | null
+          agreement_date?: string | null
           auth_user_id?: string | null
           avatar_url?: string | null
           city?: string | null
@@ -687,6 +1091,8 @@ export type Database = {
           email?: string
           first_name?: string | null
           id?: string
+          id_card_url?: string | null
+          id_card_verified?: boolean | null
           last_name?: string | null
           phone?: string | null
           subscription_end_date?: string | null
@@ -726,6 +1132,53 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "walker_availability_walker_id_fkey"
+            columns: ["walker_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      walker_certifications: {
+        Row: {
+          certificate_url: string | null
+          certification_name: string
+          certification_type: string
+          created_at: string
+          expiry_date: string | null
+          id: string
+          issue_date: string | null
+          issuer: string | null
+          verified: boolean
+          walker_id: string
+        }
+        Insert: {
+          certificate_url?: string | null
+          certification_name: string
+          certification_type: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          issue_date?: string | null
+          issuer?: string | null
+          verified?: boolean
+          walker_id: string
+        }
+        Update: {
+          certificate_url?: string | null
+          certification_name?: string
+          certification_type?: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          issue_date?: string | null
+          issuer?: string | null
+          verified?: boolean
+          walker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "walker_certifications_walker_id_fkey"
             columns: ["walker_id"]
             isOneToOne: false
             referencedRelation: "walkers"
@@ -773,9 +1226,13 @@ export type Database = {
           address: string | null
           bio: string | null
           certifications: string[] | null
+          certifications_urls: string[] | null
           city: string | null
           created_at: string
+          criminal_record_b2_url: string | null
+          criminal_record_verified: boolean | null
           experience_years: number | null
+          formation_completed: boolean | null
           hourly_rate: number
           id: string
           is_active: boolean
@@ -794,9 +1251,13 @@ export type Database = {
           address?: string | null
           bio?: string | null
           certifications?: string[] | null
+          certifications_urls?: string[] | null
           city?: string | null
           created_at?: string
+          criminal_record_b2_url?: string | null
+          criminal_record_verified?: boolean | null
           experience_years?: number | null
+          formation_completed?: boolean | null
           hourly_rate?: number
           id?: string
           is_active?: boolean
@@ -815,9 +1276,13 @@ export type Database = {
           address?: string | null
           bio?: string | null
           certifications?: string[] | null
+          certifications_urls?: string[] | null
           city?: string | null
           created_at?: string
+          criminal_record_b2_url?: string | null
+          criminal_record_verified?: boolean | null
           experience_years?: number | null
+          formation_completed?: boolean | null
           hourly_rate?: number
           id?: string
           is_active?: boolean
