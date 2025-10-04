@@ -9,16 +9,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Send, MessageCircle } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { User, Session } from '@supabase/supabase-js';
+import { useMessages } from '@/hooks/useMessages';
 
 const Messages = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [conversations, setConversations] = useState<any[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [selectedReceiverId, setSelectedReceiverId] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const navigate = useNavigate();
+  const { conversations, messages, sendMessage, markAsRead } = useMessages(selectedReceiverId || undefined);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,53 +45,23 @@ const Messages = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Placeholder conversations for demo
-  useEffect(() => {
-    if (user) {
-      setConversations([
-        {
-          id: '1',
-          participant: {
-            name: 'Julie Martin',
-            avatar: '/placeholder.svg',
-            role: 'Promeneuse'
-          },
-          lastMessage: 'D\'accord, à demain pour la promenade de Max !',
-          timestamp: '2 min',
-          unread: 2
-        },
-        {
-          id: '2',
-          participant: {
-            name: 'Thomas Dubois',
-            avatar: '/placeholder.svg',
-            role: 'Propriétaire'
-          },
-          lastMessage: 'Merci pour la belle promenade !',
-          timestamp: '1h',
-          unread: 0
-        }
-      ]);
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedReceiverId) return;
+
+    try {
+      await sendMessage(selectedReceiverId, newMessage);
+      setNewMessage('');
+      toast({
+        title: "Message envoyé",
+        description: "Votre message a été envoyé avec succès",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer le message",
+        variant: "destructive",
+      });
     }
-  }, [user]);
-
-  const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedConversation) return;
-
-    const message = {
-      id: Date.now().toString(),
-      text: newMessage,
-      sender: 'me',
-      timestamp: new Date().toISOString()
-    };
-
-    setMessages([...messages, message]);
-    setNewMessage('');
-
-    toast({
-      title: "Message envoyé",
-      description: "Votre message a été envoyé avec succès",
-    });
   };
 
   if (loading) {
@@ -136,28 +106,34 @@ const Messages = () => {
                 ) : (
                   conversations.map((conv) => (
                     <div
-                      key={conv.id}
-                      onClick={() => setSelectedConversation(conv)}
+                      key={conv.conversation_id}
+                      onClick={() => setSelectedReceiverId(conv.other_user.id)}
                       className={`flex items-center space-x-3 p-4 cursor-pointer hover:bg-accent transition-colors border-b ${
-                        selectedConversation?.id === conv.id ? 'bg-accent' : ''
+                        selectedReceiverId === conv.other_user.id ? 'bg-accent' : ''
                       }`}
                     >
                       <Avatar>
-                        <AvatarImage src={conv.participant.avatar} />
-                        <AvatarFallback>{conv.participant.name[0]}</AvatarFallback>
+                        <AvatarImage src={conv.other_user.avatar_url} />
+                        <AvatarFallback>
+                          {conv.other_user.first_name?.[0] || 'U'}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium truncate">{conv.participant.name}</h4>
-                          <span className="text-xs text-muted-foreground">{conv.timestamp}</span>
+                          <h4 className="font-medium truncate">
+                            {`${conv.other_user.first_name || ''} ${conv.other_user.last_name || ''}`.trim() || 'Utilisateur'}
+                          </h4>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(conv.last_message_time).toLocaleDateString('fr-FR')}
+                          </span>
                         </div>
                         <p className="text-sm text-muted-foreground truncate">
-                          {conv.lastMessage}
+                          {conv.last_message}
                         </p>
                       </div>
-                      {conv.unread > 0 && (
+                      {conv.unread_count > 0 && (
                         <div className="w-5 h-5 rounded-full bg-primary text-white text-xs flex items-center justify-center">
-                          {conv.unread}
+                          {conv.unread_count}
                         </div>
                       )}
                     </div>
@@ -169,17 +145,15 @@ const Messages = () => {
 
           {/* Messages Area */}
           <Card className="lg:col-span-2">
-            {selectedConversation ? (
+            {selectedReceiverId ? (
               <>
                 <CardHeader className="border-b">
                   <div className="flex items-center space-x-3">
                     <Avatar>
-                      <AvatarImage src={selectedConversation.participant.avatar} />
-                      <AvatarFallback>{selectedConversation.participant.name[0]}</AvatarFallback>
+                      <AvatarFallback>U</AvatarFallback>
                     </Avatar>
                     <div>
-                      <CardTitle className="text-lg">{selectedConversation.participant.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{selectedConversation.participant.role}</p>
+                      <CardTitle className="text-lg">Conversation</CardTitle>
                     </div>
                   </div>
                 </CardHeader>
@@ -192,22 +166,31 @@ const Messages = () => {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {messages.map((msg) => (
-                          <div
-                            key={msg.id}
-                            className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
-                          >
+                        {messages.map((msg) => {
+                          const isMine = msg.sender_user_id !== selectedReceiverId;
+                          return (
                             <div
-                              className={`max-w-[70%] rounded-lg p-3 ${
-                                msg.sender === 'me'
-                                  ? 'bg-primary text-primary-foreground'
-                                  : 'bg-muted'
-                              }`}
+                              key={msg.id}
+                              className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
                             >
-                              <p className="text-sm">{msg.text}</p>
+                              <div
+                                className={`max-w-[70%] rounded-lg p-3 ${
+                                  isMine
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                <p className="text-sm">{msg.message_text}</p>
+                                <p className="text-xs opacity-70 mt-1">
+                                  {new Date(msg.created_at).toLocaleTimeString('fr-FR', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </ScrollArea>

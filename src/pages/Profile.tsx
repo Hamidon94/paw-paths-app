@@ -7,10 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from '@supabase/supabase-js';
-import { ArrowLeft, User as UserIcon, Phone, Mail, MapPin, Edit } from 'lucide-react';
+import { ArrowLeft, User as UserIcon, Phone, Mail, MapPin, Edit, Upload } from 'lucide-react';
+import { DocumentUploader } from '@/components/DocumentUploader';
+import { useDocuments } from '@/hooks/useDocuments';
 
 interface UserProfile {
   id: string;
@@ -34,6 +37,7 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();
+  const { documents } = useDocuments();
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -195,9 +199,16 @@ const Profile = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* Profile Card */}
-        <Card className="mb-8">
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="profile">Profil</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="profile">
+            {/* Profile Card */}
+            <Card className="mb-8">
           <CardHeader>
             <CardTitle>Informations personnelles</CardTitle>
             <CardDescription>
@@ -367,7 +378,76 @@ const Profile = () => {
               </Badge>
             </div>
           </CardContent>
-        </Card>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <DocumentUploader 
+                  documentType="id_card"
+                  title="Pièce d'identité"
+                  description="Carte d'identité, passeport ou permis de conduire"
+                  required
+                />
+                <DocumentUploader 
+                  documentType="criminal_record"
+                  title="Casier judiciaire B2"
+                  description="Document requis pour les promeneurs"
+                />
+                <DocumentUploader 
+                  documentType="certification"
+                  title="Certifications"
+                  description="Certificats de formation ou qualifications"
+                />
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Mes documents</CardTitle>
+                  <CardDescription>
+                    Liste de vos documents téléchargés
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {documents.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Upload className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                      <p>Aucun document téléchargé</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {documents.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div>
+                            <p className="font-medium capitalize">
+                              {doc.document_type.replace('_', ' ')}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Téléchargé le {new Date(doc.uploaded_at).toLocaleDateString('fr-FR')}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant={doc.verified ? "default" : "secondary"}>
+                              {doc.verified ? "Vérifié" : "En attente"}
+                            </Badge>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => window.open(doc.document_url, '_blank')}
+                            >
+                              Voir
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

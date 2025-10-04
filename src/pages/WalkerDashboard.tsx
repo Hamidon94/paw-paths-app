@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useBookings } from "@/hooks/useBookings";
+import { useTips } from "@/hooks/useTips";
 import { User, Session } from '@supabase/supabase-js';
 import { 
   Calendar, 
@@ -32,14 +33,17 @@ const WalkerDashboard = () => {
   const [walker, setWalker] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { bookings, updateBookingStatus } = useBookings();
+  const { totalTips } = useTips();
   const navigate = useNavigate();
 
-  // Mock stats - in real app would come from database
+  // Calculate real stats from bookings
+  const completedBookings = bookings.filter(b => b.status === 'completed' && b.walker_id === walker?.id);
   const stats = {
-    totalWalks: 47,
-    totalEarnings: 1420.50,
-    rating: 4.8,
-    reviews: 23
+    totalWalks: completedBookings.length,
+    totalEarnings: completedBookings.reduce((sum, b) => sum + (b.walker_amount || 0), 0) + totalTips,
+    totalTips: totalTips,
+    rating: walker?.rating || 0,
+    reviews: walker?.total_reviews || 0
   };
 
   useEffect(() => {
@@ -174,9 +178,13 @@ const WalkerDashboard = () => {
               <span className="text-sm text-muted-foreground">
                 Bonjour, {user?.user_metadata?.first_name || 'promeneur'}
               </span>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/walker/settings')}>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/walker/earnings')}>
+                <Euro className="h-4 w-4 mr-2" />
+                Mes revenus
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
                 <Settings className="h-4 w-4 mr-2" />
-                Paramètres
+                Profil
               </Button>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
@@ -218,7 +226,7 @@ const WalkerDashboard = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalEarnings.toFixed(2)}€</div>
                 <p className="text-xs text-muted-foreground">
-                  +120€ cette semaine
+                  dont {stats.totalTips.toFixed(2)}€ de pourboires
                 </p>
               </CardContent>
             </Card>

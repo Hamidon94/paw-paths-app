@@ -1,6 +1,25 @@
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/NotificationBell";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Header = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -27,12 +46,15 @@ export const Header = () => {
         </nav>
         
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => window.location.href = '/auth'}>
-            Connexion
+          {isAuthenticated && <NotificationBell />}
+          <Button variant="ghost" size="sm" onClick={() => window.location.href = isAuthenticated ? '/dashboard' : '/auth'}>
+            {isAuthenticated ? 'Dashboard' : 'Connexion'}
           </Button>
-          <Button variant="hero" size="sm" onClick={() => window.location.href = '/auth?type=owner'}>
-            S'inscrire
-          </Button>
+          {!isAuthenticated && (
+            <Button variant="hero" size="sm" onClick={() => window.location.href = '/auth?type=owner'}>
+              S'inscrire
+            </Button>
+          )}
         </div>
       </div>
     </header>

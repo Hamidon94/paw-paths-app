@@ -13,6 +13,7 @@ import BookingDetails from "./pages/BookingDetails";
 import BookWalk from "./pages/BookWalk";
 import WalkerRegister from "./pages/WalkerRegister";
 import WalkerDashboard from "./pages/WalkerDashboard";
+import WalkerEarnings from "./pages/WalkerEarnings";
 import Profile from "./pages/Profile";
 import Tarifs from "./pages/Tarifs";
 import Securite from "./pages/Securite";
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/book/:walkerId" element={<BookWalk />} />
           <Route path="/walker/register" element={<WalkerRegister />} />
           <Route path="/walker/dashboard" element={<WalkerDashboard />} />
+          <Route path="/walker/earnings" element={<WalkerEarnings />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/tarifs" element={<Tarifs />} />
           <Route path="/securite" element={<Securite />} />

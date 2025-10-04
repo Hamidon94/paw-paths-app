@@ -11,6 +11,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, MapPin, Clock, Dog, User, Euro, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { GPSTracker } from '@/components/GPSTracker';
+import { MediaUploader } from '@/components/MediaUploader';
+import { TipDialog } from '@/components/TipDialog';
+import { useBookingMedia } from '@/hooks/useBookingMedia';
 
 interface BookingDetail {
   id: string;
@@ -23,6 +27,7 @@ interface BookingDetail {
   special_instructions?: string;
   walker_notes?: string;
   created_at: string;
+  walker_id?: string;
   walker: {
     first_name: string;
     last_name: string;
@@ -45,8 +50,36 @@ const BookingDetails = () => {
   const [loading, setLoading] = useState(true);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(5);
+  const [isWalker, setIsWalker] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const { media } = useBookingMedia(id || '');
 
   useEffect(() => {
+    const checkUserRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .single();
+
+      if (userData) {
+        setUserId(userData.id);
+        
+        const { data: walkerData } = await supabase
+          .from('walkers')
+          .select('id')
+          .eq('user_id', userData.id)
+          .maybeSingle();
+
+        setIsWalker(!!walkerData);
+      }
+    };
+
+    checkUserRole();
+
     if (id) {
       fetchBookingDetails();
     }
@@ -262,8 +295,53 @@ const BookingDetails = () => {
               </CardContent>
             </Card>
 
+            {/* GPS Tracking */}
+            {(booking.status === 'in_progress' || booking.status === 'completed') && (
+              <GPSTracker bookingId={booking.id} isWalker={isWalker} />
+            )}
+
+            {/* Media Gallery */}
+            {media.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Photos et vidéos de la balade</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {media.map((item) => (
+                      <div key={item.id} className="relative aspect-square rounded-lg overflow-hidden">
+                        {item.media_type === 'photo' ? (
+                          <img 
+                            src={item.media_url} 
+                            alt={item.caption || 'Photo de balade'} 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <video 
+                            src={item.media_url} 
+                            controls 
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                        {item.caption && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs">
+                            {item.caption}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Media Uploader for Walker */}
+            {isWalker && booking.status === 'in_progress' && (
+              <MediaUploader bookingId={booking.id} />
+            )}
+
             {/* Review Section */}
-            {booking.status === 'completed' && (
+            {booking.status === 'completed' && !isWalker && (
               <Card>
                 <CardHeader>
                   <CardTitle>Laisser un avis</CardTitle>
@@ -305,6 +383,15 @@ const BookingDetails = () => {
                   </Button>
                 </CardContent>
               </Card>
+            )}
+
+            {/* Tip Dialog for completed bookings */}
+            {booking.status === 'completed' && !isWalker && (
+              <TipDialog 
+                bookingId={booking.id} 
+                walkerId={booking.walker_id || ''} 
+                walkerName={`${booking.walker.first_name} ${booking.walker.last_name}`} 
+              />
             )}
           </div>
 
