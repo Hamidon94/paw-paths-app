@@ -14,6 +14,7 @@ import { fr } from 'date-fns/locale';
 import { GPSTracker } from '@/components/GPSTracker';
 import { MediaUploader } from '@/components/MediaUploader';
 import { TipDialog } from '@/components/TipDialog';
+import { WalkReportForm } from '@/components/WalkReportForm';
 import { useBookingMedia } from '@/hooks/useBookingMedia';
 
 interface BookingDetail {
@@ -391,6 +392,14 @@ const BookingDetails = () => {
                 bookingId={booking.id} 
                 walkerId={booking.walker_id || ''} 
                 walkerName={`${booking.walker.first_name} ${booking.walker.last_name}`} 
+              />
+            )}
+
+            {/* Walk Report Form for walkers */}
+            {booking.status === 'completed' && isWalker && (
+              <WalkReportForm 
+                bookingId={booking.id} 
+                walkerId={booking.walker_id || ''} 
               />
             )}
           </div>

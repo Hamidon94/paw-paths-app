@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Search, MapPin, Star, Clock, Euro, User } from 'lucide-react';
+import { AdvancedFilters } from '@/components/AdvancedFilters';
 
 interface Walker {
   id: string;
@@ -18,6 +19,8 @@ interface Walker {
   city?: string;
   experience_years: number;
   is_verified: boolean;
+  certifications?: string[];
+  languages?: string[];
   users: {
     first_name?: string;
     last_name?: string;
@@ -27,10 +30,12 @@ interface Walker {
 
 const FindWalkers = () => {
   const [walkers, setWalkers] = useState<Walker[]>([]);
+  const [filteredWalkers, setFilteredWalkers] = useState<Walker[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('rating');
   const [priceRange, setPriceRange] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,6 +101,7 @@ const FindWalkers = () => {
       }
 
       setWalkers(transformedWalkers);
+      setFilteredWalkers(transformedWalkers);
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -107,7 +113,40 @@ const FindWalkers = () => {
     }
   };
 
-  const filteredWalkers = walkers.filter(walker => {
+  const handleFiltersChange = (filters: any) => {
+    let filtered = walkers;
+
+    if (filters.priceRange) {
+      filtered = filtered.filter(w => 
+        w.hourly_rate >= filters.priceRange[0] && 
+        w.hourly_rate <= filters.priceRange[1]
+      );
+    }
+
+    if (filters.minRating > 0) {
+      filtered = filtered.filter(w => w.rating >= filters.minRating);
+    }
+
+    if (filters.experience > 0) {
+      filtered = filtered.filter(w => w.experience_years >= filters.experience);
+    }
+
+    if (filters.certifications.length > 0) {
+      filtered = filtered.filter(w => 
+        w.certifications?.some(cert => filters.certifications.includes(cert))
+      );
+    }
+
+    if (filters.languages.length > 0) {
+      filtered = filtered.filter(w => 
+        w.languages?.some(lang => filters.languages.includes(lang))
+      );
+    }
+
+    setFilteredWalkers(filtered);
+  };
+
+  const searchFilteredWalkers = filteredWalkers.filter(walker => {
     if (!searchTerm) return true;
     
     const fullName = `${walker.users?.first_name || ''} ${walker.users?.last_name || ''}`.toLowerCase();
@@ -135,12 +174,17 @@ const FindWalkers = () => {
       {/* Header */}
       <header className="border-b bg-white/95 backdrop-blur">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center space-x-4 mb-4">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Retour
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Retour
+              </Button>
+              <h1 className="text-2xl font-bold text-primary">Trouver un promeneur</h1>
+            </div>
+            <Button onClick={() => setShowFilters(!showFilters)}>
+              {showFilters ? 'Masquer les filtres' : 'Filtres avancés'}
             </Button>
-            <h1 className="text-2xl font-bold text-primary">Trouver un promeneur</h1>
           </div>
 
           {/* Search and Filters */}
@@ -183,7 +227,15 @@ const FindWalkers = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {filteredWalkers.length === 0 ? (
+        <div className="grid md:grid-cols-4 gap-6">
+          {showFilters && (
+            <div className="md:col-span-1">
+              <AdvancedFilters onFiltersChange={handleFiltersChange} />
+            </div>
+          )}
+          
+          <div className={showFilters ? 'md:col-span-3' : 'md:col-span-4'}>
+        {searchFilteredWalkers.length === 0 ? (
           <div className="text-center py-12">
             <User className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">Aucun promeneur trouvé</h3>
@@ -199,7 +251,7 @@ const FindWalkers = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredWalkers.map((walker) => (
+            {searchFilteredWalkers.map((walker) => (
               <Card key={walker.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center space-x-3">
@@ -267,6 +319,8 @@ const FindWalkers = () => {
             ))}
           </div>
         )}
+          </div>
+        </div>
       </main>
     </div>
   );

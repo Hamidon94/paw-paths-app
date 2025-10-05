@@ -20,6 +20,8 @@ import Securite from "./pages/Securite";
 import Messages from "./pages/Messages";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/AdminDashboard";
+import Referral from "./pages/Referral";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/securite" element={<Securite />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/referral" element={<Referral />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
