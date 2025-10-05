@@ -8,11 +8,13 @@ import { AdminPayments } from '@/components/admin/AdminPayments';
 import { AdminReviews } from '@/components/admin/AdminReviews';
 import { AdminStats } from '@/components/admin/AdminStats';
 import { AdminSettings } from '@/components/admin/AdminSettings';
+import { AdminProtection } from '@/components/AdminProtection';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('stats');
 
   return (
+    <AdminProtection>
     <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Administration</h1>
@@ -72,6 +74,7 @@ const AdminDashboard = () => {
         </TabsContent>
       </Tabs>
     </div>
+    </AdminProtection>
   );
 };
 

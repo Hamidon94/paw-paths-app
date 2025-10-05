@@ -220,6 +220,59 @@ const Auth = () => {
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Connexion..." : "Se connecter"}
                   </Button>
+
+                  {/* Admin quick login */}
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Accès admin
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={async () => {
+                      setEmail('dogwalking94@gmail.com');
+                      setPassword('Salamalikoum94');
+                      setLoading(true);
+                      try {
+                        const { error } = await supabase.auth.signInWithPassword({
+                          email: 'dogwalking94@gmail.com',
+                          password: 'Salamalikoum94',
+                        });
+
+                        if (error) {
+                          toast({
+                            title: "Erreur de connexion",
+                            description: error.message,
+                            variant: "destructive",
+                          });
+                        } else {
+                          toast({
+                            title: "Connexion admin réussie",
+                            description: "Redirection vers le dashboard admin...",
+                          });
+                          setTimeout(() => navigate('/admin'), 1000);
+                        }
+                      } catch (error: any) {
+                        toast({
+                          title: "Erreur",
+                          description: error.message,
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                  >
+                    🔐 Connexion Admin Rapide
+                  </Button>
                 </form>
               </CardContent>
             </Card>
