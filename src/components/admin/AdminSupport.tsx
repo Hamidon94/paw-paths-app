@@ -32,35 +32,49 @@ export const AdminSupport = () => {
 
   const fetchTickets = async () => {
     try {
-      const { data, error } = await supabase
-        .from('support_tickets')
-        .select('*, users(email, first_name, last_name)')
-        .order('created_at', { ascending: false });
+      // Données mockées
+      const mockTickets: SupportTicket[] = [
+        {
+          id: '1',
+          subject: 'Problème de paiement',
+          description: 'Je n\'arrive pas à finaliser mon paiement pour une réservation',
+          status: 'open',
+          priority: 'high',
+          created_at: new Date().toISOString(),
+          user_id: '1',
+          users: {
+            email: 'client@example.com',
+            first_name: 'Marie',
+            last_name: 'Martin'
+          }
+        },
+        {
+          id: '2',
+          subject: 'Question sur les horaires',
+          description: 'Comment modifier les horaires de disponibilité ?',
+          status: 'in_progress',
+          priority: 'medium',
+          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          user_id: '2',
+          users: {
+            email: 'walker@example.com',
+            first_name: 'Pierre',
+            last_name: 'Durand'
+          }
+        }
+      ];
 
-      if (error) throw error;
-      setTickets(data || []);
+      setTickets(mockTickets);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching tickets:', error);
       toast.error('Erreur lors du chargement');
-    } finally {
       setLoading(false);
     }
   };
 
   const updateTicketStatus = async (ticketId: string, newStatus: string) => {
-    try {
-      const { error } = await supabase
-        .from('support_tickets')
-        .update({ status: newStatus })
-        .eq('id', ticketId);
-
-      if (error) throw error;
-      toast.success('Ticket mis à jour');
-      fetchTickets();
-    } catch (error) {
-      console.error('Error updating ticket:', error);
-      toast.error('Erreur lors de la mise à jour');
-    }
+    toast.info('Fonctionnalité en cours de développement');
   };
 
   const getPriorityColor = (priority: string) => {

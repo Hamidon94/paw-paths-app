@@ -46,35 +46,58 @@ export const AdminPromotions = () => {
 
   const fetchData = async () => {
     try {
-      const [promoRes, referralRes] = await Promise.all([
-        supabase.from('promo_codes').select('*').order('created_at', { ascending: false }),
-        supabase.from('referrals').select('*, users(email, first_name, last_name)').order('created_at', { ascending: false })
-      ]);
+      // Données mockées
+      const mockPromos: PromoCode[] = [
+        {
+          id: '1',
+          code: 'BIENVENUE10',
+          discount_type: 'percentage',
+          discount_value: 10,
+          max_uses: 100,
+          current_uses: 23,
+          is_active: true,
+          valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: '2',
+          code: 'PROMO20',
+          discount_type: 'percentage',
+          discount_value: 20,
+          max_uses: 50,
+          current_uses: 15,
+          is_active: true,
+          valid_until: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
 
-      if (promoRes.data) setPromoCodes(promoRes.data);
-      if (referralRes.data) setReferrals(referralRes.data);
+      const mockReferrals: Referral[] = [
+        {
+          id: '1',
+          referral_code: 'REF123',
+          reward_amount: 10,
+          reward_claimed: true,
+          created_at: new Date().toISOString(),
+          referrer_user_id: '1',
+          users: {
+            email: 'user@example.com',
+            first_name: 'Jean',
+            last_name: 'Dupont'
+          }
+        }
+      ];
+
+      setPromoCodes(mockPromos);
+      setReferrals(mockReferrals);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Erreur lors du chargement');
-    } finally {
       setLoading(false);
     }
   };
 
   const togglePromoCode = async (id: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('promo_codes')
-        .update({ is_active: !currentStatus })
-        .eq('id', id);
-
-      if (error) throw error;
-      toast.success('Code promo mis à jour');
-      fetchData();
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Erreur lors de la mise à jour');
-    }
+    toast.info('Fonctionnalité en cours de développement');
   };
 
   if (loading) {

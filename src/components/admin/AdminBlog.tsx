@@ -28,38 +28,40 @@ export const AdminBlog = () => {
 
   const fetchPosts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('id, title, slug, excerpt, category, is_published, published_at, created_at')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setPosts(data || []);
+      // Données mockées en attendant la configuration de la table blog_posts
+      const mockData: BlogPost[] = [
+        {
+          id: '1',
+          title: 'Guide complet pour promener votre chien',
+          slug: 'guide-promener-chien',
+          excerpt: 'Découvrez nos meilleurs conseils pour des promenades réussies',
+          category: 'Conseils',
+          is_published: true,
+          published_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        },
+        {
+          id: '2',
+          title: 'Les bienfaits de la promenade quotidienne',
+          slug: 'bienfaits-promenade',
+          excerpt: 'Pourquoi promener son chien chaque jour est essentiel',
+          category: 'Santé',
+          is_published: false,
+          published_at: '',
+          created_at: new Date().toISOString()
+        }
+      ];
+      setPosts(mockData);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching posts:', error);
       toast.error('Erreur lors du chargement');
-    } finally {
       setLoading(false);
     }
   };
 
   const togglePublish = async (postId: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('blog_posts')
-        .update({ 
-          is_published: !currentStatus,
-          published_at: !currentStatus ? new Date().toISOString() : null
-        })
-        .eq('id', postId);
-
-      if (error) throw error;
-      toast.success(`Article ${!currentStatus ? 'publié' : 'dépublié'}`);
-      fetchPosts();
-    } catch (error) {
-      console.error('Error updating post:', error);
-      toast.error('Erreur lors de la mise à jour');
-    }
+    toast.info('Fonctionnalité en cours de développement');
   };
 
   if (loading) {
