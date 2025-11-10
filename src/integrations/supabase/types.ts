@@ -64,6 +64,66 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "availability_sitter_id_fkey"
+            columns: ["sitter_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      booking_reports: {
+        Row: {
+          bathroom_breaks: number | null
+          behavior_notes: string | null
+          booking_id: string
+          created_at: string | null
+          distance_km: number | null
+          duration_minutes: number | null
+          id: string
+          incidents: string | null
+          report_text: string
+          treats_given: boolean | null
+          updated_at: string | null
+          water_provided: boolean | null
+        }
+        Insert: {
+          bathroom_breaks?: number | null
+          behavior_notes?: string | null
+          booking_id: string
+          created_at?: string | null
+          distance_km?: number | null
+          duration_minutes?: number | null
+          id?: string
+          incidents?: string | null
+          report_text: string
+          treats_given?: boolean | null
+          updated_at?: string | null
+          water_provided?: boolean | null
+        }
+        Update: {
+          bathroom_breaks?: number | null
+          behavior_notes?: string | null
+          booking_id?: string
+          created_at?: string | null
+          distance_km?: number | null
+          duration_minutes?: number | null
+          id?: string
+          incidents?: string | null
+          report_text?: string
+          treats_given?: boolean | null
+          updated_at?: string | null
+          water_provided?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_reports_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
         ]
       }
       bookings: {
@@ -150,6 +210,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bookings_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "bookings_pet_id_fkey"
             columns: ["pet_id"]
             isOneToOne: false
@@ -176,6 +243,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_sitter_id_fkey"
+            columns: ["sitter_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -231,6 +305,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -297,6 +378,13 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "earnings_sitter_id_fkey"
+            columns: ["sitter_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       messages: {
@@ -350,6 +438,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
             isOneToOne: false
@@ -369,6 +464,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -424,6 +526,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -563,6 +672,13 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "pets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       reviews: {
@@ -625,6 +741,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reviews_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "reviews_booking_id_fkey"
             columns: ["booking_id"]
             isOneToOne: false
@@ -651,6 +774,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_sitter_id_fkey"
+            columns: ["sitter_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -742,6 +872,44 @@ export type Database = {
       }
     }
     Views: {
+      booking_media: {
+        Row: {
+          booking_id: string | null
+          caption: string | null
+          created_at: string | null
+          id: string | null
+          media_type: string | null
+          media_url: string | null
+          sent: boolean | null
+        }
+        Insert: {
+          booking_id?: string | null
+          caption?: string | null
+          created_at?: string | null
+          id?: string | null
+          media_type?: never
+          media_url?: string | null
+          sent?: boolean | null
+        }
+        Update: {
+          booking_id?: string | null
+          caption?: string | null
+          created_at?: string | null
+          id?: string | null
+          media_type?: never
+          media_url?: string | null
+          sent?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_photos_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       owner_profiles: {
         Row: {
           avatar_url: string | null
@@ -814,6 +982,122 @@ export type Database = {
           last_name?: string | null
           location?: string | null
           role?: string | null
+        }
+        Relationships: []
+      }
+      user_documents: {
+        Row: {
+          document_type: string | null
+          document_url: string | null
+          id: string | null
+          updated_at: string | null
+          uploaded_at: string | null
+          user_id: string | null
+          verified: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          document_type?: string | null
+          document_url?: string | null
+          id?: string | null
+          updated_at?: string | null
+          uploaded_at?: string | null
+          user_id?: string | null
+          verified?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          document_type?: string | null
+          document_url?: string | null
+          id?: string | null
+          updated_at?: string | null
+          uploaded_at?: string | null
+          user_id?: string | null
+          verified?: string | null
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "owner_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "sitter_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      walkers: {
+        Row: {
+          avatar_url: string | null
+          background_checked: boolean | null
+          bio: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          hourly_rate: number | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          last_name: string | null
+          location: string | null
+          phone: string | null
+          rating: number | null
+          total_reviews: number | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          background_checked?: boolean | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          hourly_rate?: never
+          is_active?: never
+          is_verified?: boolean | null
+          last_name?: string | null
+          location?: string | null
+          phone?: string | null
+          rating?: number | null
+          total_reviews?: never
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          background_checked?: boolean | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          hourly_rate?: never
+          is_active?: never
+          is_verified?: boolean | null
+          last_name?: string | null
+          location?: string | null
+          phone?: string | null
+          rating?: number | null
+          total_reviews?: never
+          user_id?: string | null
         }
         Relationships: []
       }
