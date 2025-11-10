@@ -85,27 +85,6 @@ export const useDocuments = () => {
 
       if (insertError) throw insertError;
 
-      // Update user table with document URL
-      if (documentType === 'id_card') {
-        await supabase
-          .from('users')
-          .update({ id_card_url: publicUrl })
-          .eq('id', userData.id);
-      } else if (documentType === 'criminal_record') {
-        const { data: walkerData } = await supabase
-          .from('walkers')
-          .select('id')
-          .eq('user_id', userData.id)
-          .single();
-
-        if (walkerData) {
-          await supabase
-            .from('walkers')
-            .update({ criminal_record_b2_url: publicUrl })
-            .eq('id', walkerData.id);
-        }
-      }
-
       await fetchDocuments();
     } catch (error) {
       console.error('Error uploading document:', error);

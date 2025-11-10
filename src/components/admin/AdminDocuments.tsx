@@ -60,9 +60,8 @@ export const AdminDocuments = () => {
       const { error } = await supabase
         .from('user_documents')
         .update({
-          verified,
-          verified_at: verified ? new Date().toISOString() : null,
-          verified_by: verified ? userData?.id : null
+          verified: false,
+          verified_at: null
         })
         .eq('id', documentId);
 

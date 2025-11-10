@@ -220,6 +220,13 @@ export type Database = {
             foreignKeyName: "bookings_pet_id_fkey"
             columns: ["pet_id"]
             isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
             referencedRelation: "pets"
             referencedColumns: ["id"]
           },
@@ -828,7 +835,9 @@ export type Database = {
           created_at: string | null
           email: string
           first_name: string
+          hourly_rate: number | null
           id: string
+          is_active: boolean | null
           is_verified: boolean | null
           last_name: string
           location: string | null
@@ -844,7 +853,9 @@ export type Database = {
           created_at?: string | null
           email: string
           first_name: string
+          hourly_rate?: number | null
           id?: string
+          is_active?: boolean | null
           is_verified?: boolean | null
           last_name: string
           location?: string | null
@@ -860,7 +871,9 @@ export type Database = {
           created_at?: string | null
           email?: string
           first_name?: string
+          hourly_rate?: number | null
           id?: string
+          is_active?: boolean | null
           is_verified?: boolean | null
           last_name?: string
           location?: string | null
@@ -907,6 +920,86 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "bookings"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      dogs: {
+        Row: {
+          age: number | null
+          behavior_notes: string | null
+          breed: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_active: boolean | null
+          medical_notes: string | null
+          name: string | null
+          photo_url: string | null
+          size: string | null
+          updated_at: string | null
+          user_id: string | null
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          behavior_notes?: string | null
+          breed?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_active?: never
+          medical_notes?: string | null
+          name?: string | null
+          photo_url?: string | null
+          size?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          behavior_notes?: string | null
+          breed?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_active?: never
+          medical_notes?: string | null
+          name?: string | null
+          photo_url?: string | null
+          size?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pets_owner_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "owner_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pets_owner_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "sitter_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pets_owner_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pets_owner_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "walkers"
+            referencedColumns: ["user_id"]
           },
         ]
       }
