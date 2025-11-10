@@ -51,17 +51,11 @@ export const AdminDocuments = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
       const { error } = await supabase
-        .from('user_documents')
+        .from('documents')
         .update({
-          verified: false,
-          verified_at: null
+          status: verified ? 'VERIFIED' : 'REJECTED',
+          verified_at: verified ? new Date().toISOString() : null
         })
         .eq('id', documentId);
 

@@ -8,19 +8,16 @@ import { CheckCircle, XCircle, Eye, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Walker {
-  id: string;
   user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
   hourly_rate: number;
   rating: number;
   total_reviews: number;
   is_active: boolean;
   is_verified: boolean;
-  users: {
-    email: string;
-    first_name: string;
-    last_name: string;
-    phone: string;
-  };
 }
 
 export const AdminWalkers = () => {
@@ -34,12 +31,27 @@ export const AdminWalkers = () => {
   const fetchWalkers = async () => {
     try {
       const { data, error } = await supabase
-        .from('walkers')
-        .select('*, users(email, first_name, last_name, phone)')
+        .from('users')
+        .select('*')
+        .eq('role', 'sitter')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setWalkers(data || []);
+      
+      const mappedWalkers: Walker[] = (data || []).map(user => ({
+        user_id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone || '',
+        hourly_rate: user.hourly_rate || 20,
+        rating: user.average_rating || 0,
+        total_reviews: 0,
+        is_active: user.is_active || true,
+        is_verified: user.is_verified || false
+      }));
+      
+      setWalkers(mappedWalkers);
     } catch (error) {
       console.error('Error fetching walkers:', error);
       toast.error('Erreur lors du chargement des promeneurs');
@@ -51,7 +63,7 @@ export const AdminWalkers = () => {
   const toggleVerification = async (walkerId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
-        .from('walkers')
+        .from('users')
         .update({ is_verified: !currentStatus })
         .eq('id', walkerId);
 
@@ -68,7 +80,7 @@ export const AdminWalkers = () => {
   const toggleActive = async (walkerId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
-        .from('walkers')
+        .from('users')
         .update({ is_active: !currentStatus })
         .eq('id', walkerId);
 
@@ -109,12 +121,12 @@ export const AdminWalkers = () => {
           </TableHeader>
           <TableBody>
             {walkers.map((walker) => (
-              <TableRow key={walker.id}>
+              <TableRow key={walker.user_id}>
                 <TableCell className="font-medium">
-                  {walker.users.first_name} {walker.users.last_name}
+                  {walker.first_name} {walker.last_name}
                 </TableCell>
-                <TableCell>{walker.users.email}</TableCell>
-                <TableCell>{walker.users.phone || 'N/A'}</TableCell>
+                <TableCell>{walker.email}</TableCell>
+                <TableCell>{walker.phone || 'N/A'}</TableCell>
                 <TableCell>{walker.hourly_rate} €</TableCell>
                 <TableCell>
                   <Badge variant="outline">
@@ -136,7 +148,7 @@ export const AdminWalkers = () => {
                     <Button
                       size="sm"
                       variant={walker.is_verified ? 'outline' : 'default'}
-                      onClick={() => toggleVerification(walker.id, walker.is_verified)}
+                      onClick={() => toggleVerification(walker.user_id, walker.is_verified)}
                     >
                       {walker.is_verified ? (
                         <><XCircle className="h-4 w-4 mr-1" /> Retirer</>
@@ -147,7 +159,7 @@ export const AdminWalkers = () => {
                     <Button
                       size="sm"
                       variant={walker.is_active ? 'destructive' : 'default'}
-                      onClick={() => toggleActive(walker.id, walker.is_active)}
+                      onClick={() => toggleActive(walker.user_id, walker.is_active)}
                     >
                       {walker.is_active ? 'Suspendre' : 'Activer'}
                     </Button>

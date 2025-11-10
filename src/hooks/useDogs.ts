@@ -41,15 +41,32 @@ export const useDogs = () => {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('dogs')
+      const { data, error} = await supabase
+        .from('pets')
         .select('*')
-        .eq('user_id', profile.id)
-        .eq('is_active', true)
+        .eq('owner_id', profile.id)
         .order('created_at', { ascending: false });
+      
+      // Map pets to dogs interface
+      const mappedDogs = (data || []).map(pet => ({
+        id: pet.id,
+        user_id: pet.owner_id,
+        name: pet.name,
+        breed: pet.breed || '',
+        age: pet.age || 0,
+        size: pet.type || '',
+        weight: pet.weight,
+        description: pet.bio,
+        medical_notes: pet.medical_history,
+        behavior_notes: pet.temperament,
+        photo_url: pet.photo_url,
+        is_active: true,
+        created_at: pet.created_at,
+        updated_at: pet.updated_at
+      }));
 
       if (error) throw error;
-      setDogs(data || []);
+      setDogs(mappedDogs);
     } catch (error: any) {
       console.error('Error fetching dogs:', error);
       toast({
@@ -78,14 +95,42 @@ export const useDogs = () => {
       if (userError) throw userError;
 
       const { data, error } = await supabase
-        .from('dogs')
-        .insert([{ ...dogData, user_id: userData.id }])
+        .from('pets')
+        .insert([{ 
+          name: dogData.name,
+          breed: dogData.breed,
+          age: dogData.age,
+          type: dogData.size,
+          weight: dogData.weight,
+          bio: dogData.description,
+          medical_history: dogData.medical_notes,
+          temperament: dogData.behavior_notes,
+          photo_url: dogData.photo_url,
+          owner_id: userData.id
+        }])
         .select()
         .single();
+      
+      const mappedDog: Dog = {
+        id: data.id,
+        user_id: data.owner_id,
+        name: data.name,
+        breed: data.breed || '',
+        age: data.age || 0,
+        size: data.type || '',
+        weight: data.weight,
+        description: data.bio,
+        medical_notes: data.medical_history,
+        behavior_notes: data.temperament,
+        photo_url: data.photo_url,
+        is_active: true,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      };
 
       if (error) throw error;
 
-      setDogs(prev => [data, ...prev]);
+      setDogs(prev => [mappedDog, ...prev]);
       toast({
         title: "Succès",
         description: "Votre chien a été ajouté avec succès",
@@ -104,16 +149,44 @@ export const useDogs = () => {
 
   const updateDog = async (id: string, updates: Partial<Dog>) => {
     try {
+      const petUpdates: any = {};
+      if (updates.name) petUpdates.name = updates.name;
+      if (updates.breed) petUpdates.breed = updates.breed;
+      if (updates.age) petUpdates.age = updates.age;
+      if (updates.size) petUpdates.type = updates.size;
+      if (updates.weight) petUpdates.weight = updates.weight;
+      if (updates.description) petUpdates.bio = updates.description;
+      if (updates.medical_notes) petUpdates.medical_history = updates.medical_notes;
+      if (updates.behavior_notes) petUpdates.temperament = updates.behavior_notes;
+      if (updates.photo_url) petUpdates.photo_url = updates.photo_url;
+      
       const { data, error } = await supabase
-        .from('dogs')
-        .update(updates)
+        .from('pets')
+        .update(petUpdates)
         .eq('id', id)
         .select()
         .single();
+      
+      const mappedDog: Dog = {
+        id: data.id,
+        user_id: data.owner_id,
+        name: data.name,
+        breed: data.breed || '',
+        age: data.age || 0,
+        size: data.type || '',
+        weight: data.weight,
+        description: data.bio,
+        medical_notes: data.medical_history,
+        behavior_notes: data.temperament,
+        photo_url: data.photo_url,
+        is_active: true,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      };
 
       if (error) throw error;
 
-      setDogs(prev => prev.map(dog => dog.id === id ? data : dog));
+      setDogs(prev => prev.map(dog => dog.id === id ? mappedDog : dog));
       toast({
         title: "Succès",
         description: "Les informations du chien ont été mises à jour",
@@ -133,8 +206,8 @@ export const useDogs = () => {
   const deleteDog = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('dogs')
-        .update({ is_active: false })
+        .from('pets')
+        .delete()
         .eq('id', id);
 
       if (error) throw error;

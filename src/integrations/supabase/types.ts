@@ -73,6 +73,44 @@ export type Database = {
           },
         ]
       }
+      booking_locations: {
+        Row: {
+          accuracy: number | null
+          booking_id: string
+          created_at: string | null
+          id: string
+          latitude: number
+          longitude: number
+          recorded_at: string
+        }
+        Insert: {
+          accuracy?: number | null
+          booking_id: string
+          created_at?: string | null
+          id?: string
+          latitude: number
+          longitude: number
+          recorded_at?: string
+        }
+        Update: {
+          accuracy?: number | null
+          booking_id?: string
+          created_at?: string | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          recorded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_locations_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_reports: {
         Row: {
           bathroom_breaks: number | null

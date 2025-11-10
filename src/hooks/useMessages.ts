@@ -3,14 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface Message {
   id: string;
-  conversation_id: string;
-  sender_user_id: string;
-  receiver_user_id: string;
-  booking_id?: string;
-  message_text: string;
+  sender_id: string;
+  recipient_id: string;
+  content: string;
   is_read: boolean;
+  attachment_url?: string;
   created_at: string;
-  updated_at: string;
   sender?: {
     first_name: string;
     last_name: string;
@@ -19,7 +17,7 @@ export interface Message {
 }
 
 export interface Conversation {
-  conversation_id: string;
+  other_user_id: string;
   other_user: {
     id: string;
     first_name: string;
@@ -46,7 +44,7 @@ export const useMessages = (conversationId?: string) => {
       const { data: userData } = await supabase
         .from('users')
         .select('id')
-        .eq('auth_user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (!userData) return;
@@ -54,18 +52,18 @@ export const useMessages = (conversationId?: string) => {
       const { data, error } = await supabase
         .from('messages')
         .select('*')
-        .eq('conversation_id', conversationId)
+        .or(`and(sender_id.eq.${userData.id},recipient_id.eq.${conversationId}),and(sender_id.eq.${conversationId},recipient_id.eq.${userData.id})`)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
       
-      // Fetch sender info separately to avoid relationship ambiguity
+      // Fetch sender info separately
       const messagesWithSenders = await Promise.all(
         (data || []).map(async (msg) => {
           const { data: senderData } = await supabase
             .from('users')
             .select('first_name, last_name, avatar_url')
-            .eq('id', msg.sender_user_id)
+            .eq('id', msg.sender_id)
             .single();
           
           return {
@@ -91,7 +89,7 @@ export const useMessages = (conversationId?: string) => {
       const { data: userData } = await supabase
         .from('users')
         .select('id')
-        .eq('auth_user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (!userData) return;
@@ -99,20 +97,20 @@ export const useMessages = (conversationId?: string) => {
       const { data, error } = await supabase
         .from('messages')
         .select('*')
-        .or(`sender_user_id.eq.${userData.id},receiver_user_id.eq.${userData.id}`)
+        .or(`sender_id.eq.${userData.id},recipient_id.eq.${userData.id}`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Group by conversation
+      // Group by other user
       const conversationMap = new Map<string, Conversation>();
       
       for (const msg of data || []) {
-        if (!conversationMap.has(msg.conversation_id)) {
-          const otherUserId = msg.sender_user_id === userData.id 
-            ? msg.receiver_user_id 
-            : msg.sender_user_id;
-
+        const otherUserId = msg.sender_id === userData.id 
+          ? msg.recipient_id 
+          : msg.sender_id;
+          
+        if (!conversationMap.has(otherUserId)) {
           const { data: otherUserData } = await supabase
             .from('users')
             .select('id, first_name, last_name, avatar_url')
@@ -120,16 +118,16 @@ export const useMessages = (conversationId?: string) => {
             .single();
 
           const unreadCount = data.filter(
-            m => m.conversation_id === msg.conversation_id && 
-                 m.receiver_user_id === userData.id && 
+            m => (m.sender_id === otherUserId || m.recipient_id === otherUserId) && 
+                 m.recipient_id === userData.id && 
                  !m.is_read
           ).length;
 
           if (otherUserData) {
-            conversationMap.set(msg.conversation_id, {
-              conversation_id: msg.conversation_id,
+            conversationMap.set(otherUserId, {
+              other_user_id: otherUserId,
               other_user: otherUserData,
-              last_message: msg.message_text,
+              last_message: msg.content,
               last_message_time: msg.created_at,
               unread_count: unreadCount
             });
@@ -145,7 +143,7 @@ export const useMessages = (conversationId?: string) => {
     }
   };
 
-  const sendMessage = async (receiverUserId: string, messageText: string, bookingId?: string) => {
+  const sendMessage = async (receiverUserId: string, messageText: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -153,21 +151,17 @@ export const useMessages = (conversationId?: string) => {
       const { data: userData } = await supabase
         .from('users')
         .select('id')
-        .eq('auth_user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (!userData) throw new Error('User not found');
 
-      const convId = conversationId || `${userData.id}_${receiverUserId}`;
-
       const { error } = await supabase
         .from('messages')
         .insert({
-          conversation_id: convId,
-          sender_user_id: userData.id,
-          receiver_user_id: receiverUserId,
-          message_text: messageText,
-          booking_id: bookingId
+          sender_id: userData.id,
+          recipient_id: receiverUserId,
+          content: messageText
         });
 
       if (error) throw error;
