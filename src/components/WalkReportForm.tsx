@@ -33,12 +33,11 @@ export const WalkReportForm = ({ bookingId, walkerId, onReportCreated }: WalkRep
         .from('booking_reports')
         .insert({
           booking_id: bookingId,
-          walker_id: walkerId,
+          report_text: `Comportement: ${report.behaviorNotes}\n\nSanté: ${report.healthNotes}\n\nIncidents: ${report.incidents}`,
           behavior_notes: report.behaviorNotes,
-          health_notes: report.healthNotes,
           incidents: report.incidents,
           distance_km: report.distanceKm ? parseFloat(report.distanceKm) : null,
-          duration_actual_minutes: report.durationMinutes ? parseInt(report.durationMinutes) : null
+          duration_minutes: report.durationMinutes ? parseInt(report.durationMinutes) : null
         });
 
       if (error) throw error;

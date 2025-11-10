@@ -11,8 +11,11 @@ interface Review {
   id: string;
   rating: number;
   comment: string;
-  is_visible: boolean;
+  is_verified: boolean;
   created_at: string;
+  author_id: string;
+  booking_id: string;
+  sitter_id: string;
 }
 
 export const AdminReviews = () => {
@@ -40,15 +43,15 @@ export const AdminReviews = () => {
     }
   };
 
-  const toggleVisibility = async (reviewId: string, currentVisibility: boolean) => {
+  const toggleVerification = async (reviewId: string, currentVerified: boolean) => {
     try {
       const { error } = await supabase
         .from('reviews')
-        .update({ is_visible: !currentVisibility })
+        .update({ is_verified: !currentVerified })
         .eq('id', reviewId);
 
       if (error) throw error;
-      toast.success('Visibilité mise à jour');
+      toast.success('Vérification mise à jour');
       fetchReviews();
     } catch (error) {
       console.error('Error updating review:', error);
@@ -83,19 +86,19 @@ export const AdminReviews = () => {
                 <TableCell>{review.rating}/5</TableCell>
                 <TableCell className="max-w-md truncate">{review.comment}</TableCell>
                 <TableCell>
-                  {review.is_visible ? (
-                    <Badge variant="default">Visible</Badge>
+                  {review.is_verified ? (
+                    <Badge variant="default">Vérifié</Badge>
                   ) : (
-                    <Badge variant="secondary">Masqué</Badge>
+                    <Badge variant="secondary">Non vérifié</Badge>
                   )}
                 </TableCell>
                 <TableCell>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => toggleVisibility(review.id, review.is_visible)}
+                    onClick={() => toggleVerification(review.id, review.is_verified)}
                   >
-                    {review.is_visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {review.is_verified ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </TableCell>
               </TableRow>

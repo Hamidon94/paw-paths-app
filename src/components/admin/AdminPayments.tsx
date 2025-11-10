@@ -10,12 +10,8 @@ import { toast } from 'sonner';
 interface Payment {
   id: string;
   total_price: number;
-  commission_amount: number;
-  walker_amount: number;
   payment_status: string;
-  booking_date: string;
-  client_user_id: string;
-  walker_id: string;
+  start_date: string;
 }
 
 export const AdminPayments = () => {
@@ -33,7 +29,7 @@ export const AdminPayments = () => {
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
-        .order('booking_date', { ascending: false });
+        .order('start_date', { ascending: false });
 
       if (error) throw error;
       setPayments(data || []);
@@ -54,7 +50,7 @@ export const AdminPayments = () => {
   };
 
   const totalRevenue = payments.reduce((sum, p) => sum + Number(p.total_price), 0);
-  const totalCommission = payments.reduce((sum, p) => sum + Number(p.commission_amount), 0);
+  const totalCommission = totalRevenue * 0.20; // 20% commission
 
   if (loading) {
     return <div>Chargement...</div>;
@@ -120,19 +116,23 @@ export const AdminPayments = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {payments.map((payment) => (
-                <TableRow key={payment.id}>
-                  <TableCell>{new Date(payment.booking_date).toLocaleDateString('fr-FR')}</TableCell>
-                  <TableCell>{Number(payment.total_price).toFixed(2)} €</TableCell>
-                  <TableCell>{Number(payment.commission_amount).toFixed(2)} €</TableCell>
-                  <TableCell>{Number(payment.walker_amount).toFixed(2)} €</TableCell>
-                  <TableCell>
-                    <Badge variant={payment.payment_status === 'paid' ? 'default' : 'secondary'}>
-                      {payment.payment_status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {payments.map((payment) => {
+                const commission = Number(payment.total_price) * 0.20;
+                const walkerAmount = Number(payment.total_price) - commission;
+                return (
+                  <TableRow key={payment.id}>
+                    <TableCell>{new Date(payment.start_date).toLocaleDateString('fr-FR')}</TableCell>
+                    <TableCell>{Number(payment.total_price).toFixed(2)} €</TableCell>
+                    <TableCell>{commission.toFixed(2)} €</TableCell>
+                    <TableCell>{walkerAmount.toFixed(2)} €</TableCell>
+                    <TableCell>
+                      <Badge variant={payment.payment_status === 'PAID' ? 'default' : 'secondary'}>
+                        {payment.payment_status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

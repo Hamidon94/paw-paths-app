@@ -13,7 +13,8 @@ interface User {
   first_name: string;
   last_name: string;
   created_at: string;
-  auth_user_id: string;
+  role: string;
+  phone: string;
 }
 
 export const AdminUsers = () => {

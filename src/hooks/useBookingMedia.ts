@@ -56,28 +56,13 @@ export const useBookingMedia = (bookingId: string) => {
         .from('booking-media')
         .getPublicUrl(fileName);
 
-      // Get current location if available
-      let latitude: number | undefined;
-      let longitude: number | undefined;
-
-      if (navigator.geolocation) {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-        });
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-      }
-
-      // Insert media record
+      // Insert media record into service_photos (booking_media is a view)
       const { error: insertError } = await supabase
-        .from('booking_media')
+        .from('service_photos')
         .insert({
           booking_id: bookingId,
-          media_url: publicUrl,
-          media_type: mediaType,
-          caption,
-          latitude,
-          longitude
+          url: publicUrl,
+          caption
         });
 
       if (insertError) throw insertError;

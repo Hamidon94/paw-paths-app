@@ -993,7 +993,7 @@ export type Database = {
           updated_at: string | null
           uploaded_at: string | null
           user_id: string | null
-          verified: string | null
+          verified: boolean | null
           verified_at: string | null
         }
         Insert: {
@@ -1003,7 +1003,7 @@ export type Database = {
           updated_at?: string | null
           uploaded_at?: string | null
           user_id?: string | null
-          verified?: string | null
+          verified?: never
           verified_at?: string | null
         }
         Update: {
@@ -1013,7 +1013,7 @@ export type Database = {
           updated_at?: string | null
           uploaded_at?: string | null
           user_id?: string | null
-          verified?: string | null
+          verified?: never
           verified_at?: string | null
         }
         Relationships: [
