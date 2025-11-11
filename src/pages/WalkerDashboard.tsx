@@ -37,7 +37,7 @@ const WalkerDashboard = () => {
   const navigate = useNavigate();
 
   // Calculate real stats from bookings
-  const completedBookings = bookings.filter(b => b.status === 'completed' && b.walker_id === walker?.id);
+  const completedBookings = bookings.filter(b => b.status === 'completed' && b.sitter_id === walker?.user_id);
   const stats = {
     totalWalks: completedBookings.length,
     totalEarnings: completedBookings.reduce((sum, b) => sum + (b.walker_amount || 0), 0) + totalTips,
@@ -149,7 +149,7 @@ const WalkerDashboard = () => {
   };
 
   // Filter bookings for this walker
-  const walkerBookings = bookings.filter(booking => booking.walker_id === walker?.id);
+  const walkerBookings = bookings.filter(booking => booking.sitter_id === walker?.user_id);
   const pendingBookings = walkerBookings.filter(b => b.status === 'pending');
   const upcomingBookings = walkerBookings.filter(b => b.status === 'confirmed');
   const pastBookings = walkerBookings.filter(b => ['completed', 'cancelled'].includes(b.status));

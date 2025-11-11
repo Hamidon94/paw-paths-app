@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 export interface Walker {
-  id: string;
   user_id: string;
   bio?: string;
   experience_years: number;
@@ -98,13 +97,13 @@ export const useWalkers = () => {
       if (userError) throw userError;
 
       const { data, error } = await supabase
-        .from('walkers')
-        .insert({
+        .from('users')
+        .update({
           ...walkerData,
-          user_id: userData.id,
+          role: 'sitter',
+          hourly_rate: walkerData.hourly_rate
         })
-        .select()
-        .single();
+        .eq('id', userData.id)
 
       if (error) throw error;
 
@@ -125,14 +124,12 @@ export const useWalkers = () => {
     }
   };
 
-  const updateWalkerProfile = async (id: string, updates: Partial<Walker>) => {
+  const updateWalkerProfile = async (userId: string, updates: Partial<Walker>) => {
     try {
       const { data, error } = await supabase
-        .from('walkers')
+        .from('users')
         .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+        .eq('id', userId)
 
       if (error) throw error;
 

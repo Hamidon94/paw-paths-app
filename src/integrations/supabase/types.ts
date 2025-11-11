@@ -864,6 +864,44 @@ export type Database = {
           },
         ]
       }
+      tips: {
+        Row: {
+          amount: number
+          booking_id: string
+          client_user_id: string
+          created_at: string | null
+          id: string
+          stripe_payment_intent_id: string | null
+          walker_id: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          client_user_id: string
+          created_at?: string | null
+          id?: string
+          stripe_payment_intent_id?: string | null
+          walker_id: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          client_user_id?: string
+          created_at?: string | null
+          id?: string
+          stripe_payment_intent_id?: string | null
+          walker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tips_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           avatar_url: string | null

@@ -17,16 +17,15 @@ import { useDocuments } from '@/hooks/useDocuments';
 
 interface UserProfile {
   id: string;
-  auth_user_id: string;
   first_name?: string;
   last_name?: string;
   email: string;
   phone?: string;
-  address?: string;
-  city?: string;
+  location?: string;
   avatar_url?: string;
+  bio?: string;
+  role: string;
   created_at: string;
-  updated_at: string;
 }
 
 const Profile = () => {
@@ -43,8 +42,8 @@ const Profile = () => {
     first_name: '',
     last_name: '',
     phone: '',
-    address: '',
-    city: '',
+    location: '',
+    bio: '',
     avatar_url: ''
   });
 
@@ -80,7 +79,7 @@ const Profile = () => {
       const { data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('auth_user_id', authUserId)
+        .eq('id', authUserId)
         .single();
 
       if (error && error.code !== 'PGRST116') { // Not found is ok, we'll create it
@@ -93,8 +92,8 @@ const Profile = () => {
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           phone: data.phone || '',
-          address: data.address || '',
-          city: data.city || '',
+          location: data.location || '',
+          bio: data.bio || '',
           avatar_url: data.avatar_url || ''
         });
       }
@@ -120,10 +119,7 @@ const Profile = () => {
         // Update existing profile
         const { error } = await supabase
           .from('users')
-          .update({
-            ...formData,
-            updated_at: new Date().toISOString()
-          })
+          .update(formData)
           .eq('id', profile.id);
 
         if (error) throw error;
@@ -132,8 +128,9 @@ const Profile = () => {
         const { error } = await supabase
           .from('users')
           .insert({
-            auth_user_id: user.id,
+            id: user.id,
             email: user.email!,
+            role: 'owner',
             ...formData
           });
 
@@ -274,22 +271,22 @@ const Profile = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="address">Adresse</Label>
+                  <Label htmlFor="location">Localisation</Label>
                   <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                    placeholder="Votre adresse"
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    placeholder="Votre ville"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="city">Ville</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                    placeholder="Votre ville"
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    value={formData.bio}
+                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder="Parlez-nous de vous"
                   />
                 </div>
 
@@ -336,15 +333,16 @@ const Profile = () => {
 
                 <div className="flex items-center space-x-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Adresse:</span>
-                  <span>{profile?.address || 'Non renseigné'}</span>
+                  <span className="text-sm text-muted-foreground">Localisation:</span>
+                  <span>{profile?.location || 'Non renseigné'}</span>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Ville:</span>
-                  <span>{profile?.city || 'Non renseigné'}</span>
-                </div>
+                {profile?.bio && (
+                  <div className="flex items-start space-x-2">
+                    <span className="text-sm text-muted-foreground">Bio:</span>
+                    <span className="text-sm">{profile.bio}</span>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>

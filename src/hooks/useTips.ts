@@ -34,14 +34,16 @@ export const useTips = (walkerId?: string) => {
 
         if (!userData) return;
 
-        const { data: walkerData } = await supabase
-          .from('walkers')
+        // Query users table for sitter role
+        const { data: sitterData } = await supabase
+          .from('users')
           .select('id')
-          .eq('user_id', userData.id)
+          .eq('id', userData.id)
+          .eq('role', 'sitter')
           .maybeSingle();
 
-        if (walkerData) {
-          query = query.eq('walker_id', walkerData.id);
+        if (sitterData) {
+          query = query.eq('walker_id', sitterData.id);
         } else {
           query = query.eq('client_user_id', userData.id);
         }

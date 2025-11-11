@@ -4,9 +4,9 @@ import { toast } from '@/hooks/use-toast';
 
 export interface Booking {
   id: string;
-  client_user_id: string;
-  walker_id: string;
-  dog_id: string;
+  owner_id: string;
+  sitter_id: string;
+  pet_id: string;
   booking_date: string;
   start_time: string;
   duration_minutes: number;
@@ -90,15 +90,14 @@ export const useBookings = () => {
   }, []);
 
   const createBooking = async (bookingData: {
-    walker_id: string;
-    dog_id: string;
-    booking_date: string;
-    start_time: string;
-    duration_minutes: number;
-    pickup_address: string;
-    pickup_latitude?: number;
-    pickup_longitude?: number;
-    special_instructions?: string;
+    walkerId: string;
+    dogId: string;
+    start_date: string;
+    end_date: string;
+    duration: number;
+    service_type: string;
+    base_price: number;
+    notes?: string;
   }) => {
     try {
       // Get current user ID from users table
@@ -110,29 +109,30 @@ export const useBookings = () => {
 
       if (userError) throw userError;
 
-      // Get walker hourly rate to calculate total price
-      const { data: walkerData, error: walkerError } = await supabase
-        .from('walkers')
+      // Get user's hourly rate
+      const { data: sitterData } = await supabase
+        .from('users')
         .select('hourly_rate')
-        .eq('id', bookingData.walker_id)
+        .eq('id', bookingData.walkerId)
         .single();
 
-      if (walkerError) throw walkerError;
-
-      const totalPrice = (walkerData.hourly_rate / 60) * bookingData.duration_minutes;
-
-      const commissionAmount = totalPrice * 0.20;
-      const walkerAmount = totalPrice - commissionAmount;
+      const hourlyRate = sitterData?.hourly_rate || 30;
+      const totalPrice = (hourlyRate * bookingData.duration) / 60;
 
       const { data, error } = await supabase
         .from('bookings')
         .insert({
-          ...bookingData,
-          client_user_id: userData.id,
+          owner_id: userData.id,
+          sitter_id: bookingData.walkerId,
+          pet_id: bookingData.dogId,
+          start_date: bookingData.start_date,
+          end_date: bookingData.end_date,
+          duration: bookingData.duration,
+          service_type: bookingData.service_type,
+          base_price: bookingData.base_price,
           total_price: totalPrice,
-          commission_rate: 0.20,
-          commission_amount: commissionAmount,
-          walker_amount: walkerAmount,
+          booking_number: `BK-${Date.now()}`,
+          notes: bookingData.notes,
         })
         .select()
         .single();

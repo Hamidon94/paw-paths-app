@@ -76,7 +76,7 @@ export const NotificationBell = () => {
                 >
                   <div className="flex gap-3">
                     <div className="text-2xl">
-                      {getNotificationIcon(notification.notification_type)}
+                      {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
@@ -88,7 +88,7 @@ export const NotificationBell = () => {
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                        {notification.message}
+                        {notification.description}
                       </p>
                       <p className="text-xs text-muted-foreground mt-2">
                         {formatDistanceToNow(new Date(notification.created_at), {

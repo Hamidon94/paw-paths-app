@@ -106,7 +106,7 @@ const Messages = () => {
                 ) : (
                   conversations.map((conv) => (
                     <div
-                      key={conv.conversation_id}
+                      key={conv.other_user_id}
                       onClick={() => setSelectedReceiverId(conv.other_user.id)}
                       className={`flex items-center space-x-3 p-4 cursor-pointer hover:bg-accent transition-colors border-b ${
                         selectedReceiverId === conv.other_user.id ? 'bg-accent' : ''
@@ -167,7 +167,7 @@ const Messages = () => {
                     ) : (
                       <div className="space-y-4">
                         {messages.map((msg) => {
-                          const isMine = msg.sender_user_id !== selectedReceiverId;
+                          const isMine = msg.sender_id !== selectedReceiverId;
                           return (
                             <div
                               key={msg.id}
@@ -180,7 +180,7 @@ const Messages = () => {
                                     : 'bg-muted'
                                 }`}
                               >
-                                <p className="text-sm">{msg.message_text}</p>
+                                <p className="text-sm">{msg.content}</p>
                                 <p className="text-xs opacity-70 mt-1">
                                   {new Date(msg.created_at).toLocaleTimeString('fr-FR', { 
                                     hour: '2-digit', 

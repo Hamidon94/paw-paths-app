@@ -19,16 +19,15 @@ import { useBookingMedia } from '@/hooks/useBookingMedia';
 
 interface BookingDetail {
   id: string;
-  booking_date: string;
-  start_time: string;
-  duration_minutes: number;
+  start_date: string;
+  end_date: string;
+  duration: number;
   total_price: number;
+  base_price: number;
   status: string;
-  pickup_address: string;
-  special_instructions?: string;
-  walker_notes?: string;
+  notes?: string;
   created_at: string;
-  walker_id?: string;
+  sitter_id?: string;
   walker: {
     first_name: string;
     last_name: string;
@@ -162,8 +161,8 @@ const BookingDetails = () => {
         .from('reviews')
         .insert([{
           booking_id: booking.id,
-          client_user_id: userData.id,
-          walker_id: 'walker-id',
+          author_id: userData.id,
+          sitter_id: booking.sitter_id || '',
           rating,
           comment: review,
         }]);
@@ -247,16 +246,12 @@ const BookingDetails = () => {
                   <div>
                     <p className="text-sm text-muted-foreground">Date</p>
                     <p className="font-medium">
-                      {format(new Date(booking.booking_date), 'EEEE d MMMM yyyy', { locale: fr })}
+                      {format(new Date(booking.start_date), 'EEEE d MMMM yyyy', { locale: fr })}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Heure</p>
-                    <p className="font-medium">{booking.start_time}</p>
-                  </div>
-                  <div>
                     <p className="text-sm text-muted-foreground">Durée</p>
-                    <p className="font-medium">{booking.duration_minutes} minutes</p>
+                    <p className="font-medium">{booking.duration} heures</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Prix total</p>
@@ -265,33 +260,12 @@ const BookingDetails = () => {
                 </div>
                 
                 <Separator />
-                
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Adresse de récupération</p>
-                  <div className="flex items-start space-x-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                    <p>{booking.pickup_address}</p>
+
+                {booking.notes && (
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">Notes</p>
+                    <p className="text-sm bg-muted p-3 rounded-lg">{booking.notes}</p>
                   </div>
-                </div>
-
-                {booking.special_instructions && (
-                  <>
-                    <Separator />
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">Instructions spéciales</p>
-                      <p className="text-sm bg-muted p-3 rounded-lg">{booking.special_instructions}</p>
-                    </div>
-                  </>
-                )}
-
-                {booking.walker_notes && (
-                  <>
-                    <Separator />
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">Notes du promeneur</p>
-                      <p className="text-sm bg-primary/5 p-3 rounded-lg">{booking.walker_notes}</p>
-                    </div>
-                  </>
                 )}
               </CardContent>
             </Card>
@@ -390,7 +364,7 @@ const BookingDetails = () => {
             {booking.status === 'completed' && !isWalker && (
               <TipDialog 
                 bookingId={booking.id} 
-                walkerId={booking.walker_id || ''} 
+                walkerId={booking.sitter_id || ''}
                 walkerName={`${booking.walker.first_name} ${booking.walker.last_name}`} 
               />
             )}
@@ -399,7 +373,7 @@ const BookingDetails = () => {
             {booking.status === 'completed' && isWalker && (
               <WalkReportForm 
                 bookingId={booking.id} 
-                walkerId={booking.walker_id || ''} 
+                walkerId={booking.sitter_id || ''} 
               />
             )}
           </div>

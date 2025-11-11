@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -12,20 +12,16 @@ import { ArrowLeft, Search, MapPin, Star, Clock, Euro, User } from 'lucide-react
 import { AdvancedFilters } from '@/components/AdvancedFilters';
 
 interface Walker {
-  id: string;
+  user_id: string;
   hourly_rate: number;
-  rating: number;
   bio?: string;
-  city?: string;
+  location?: string;
   experience_years: number;
   is_verified: boolean;
-  certifications?: string[];
-  languages?: string[];
-  users: {
-    first_name?: string;
-    last_name?: string;
-    avatar_url?: string;
-  };
+  average_rating: number;
+  first_name: string;
+  last_name: string;
+  avatar_url?: string;
 }
 
 const FindWalkers = () => {
@@ -45,21 +41,9 @@ const FindWalkers = () => {
   const fetchWalkers = async () => {
     try {
       const { data, error } = await supabase
-        .from('walkers')
-        .select(`
-          id,
-          hourly_rate,
-          rating,
-          bio,
-          city,
-          experience_years,
-          is_verified,
-          users!walkers_user_id_fkey(
-            first_name,
-            last_name,
-            avatar_url
-          )
-        `)
+        .from('users')
+        .select('*')
+        .eq('role', 'sitter')
         .eq('is_active', true);
 
       if (error) {
@@ -67,20 +51,18 @@ const FindWalkers = () => {
         throw error;
       }
 
-      // Transform the data to match our Walker interface
-      let transformedWalkers = (data || []).map(walker => ({
-        id: walker.id,
-        hourly_rate: walker.hourly_rate,
-        rating: walker.rating,
-        bio: walker.bio,
-        city: walker.city,
-        experience_years: walker.experience_years,
-        is_verified: walker.is_verified,
-        users: {
-          first_name: walker.users?.first_name,
-          last_name: walker.users?.last_name,
-          avatar_url: walker.users?.avatar_url,
-        }
+      // Transform the data
+      let transformedWalkers = (data || []).map(user => ({
+        user_id: user.id,
+        hourly_rate: user.hourly_rate || 30,
+        bio: user.bio,
+        location: user.location,
+        experience_years: 2,
+        is_verified: user.is_verified,
+        average_rating: user.average_rating || 4.0,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        avatar_url: user.avatar_url,
       }));
 
       // Apply price filter
@@ -93,7 +75,7 @@ const FindWalkers = () => {
 
       // Apply sorting
       if (sortBy === 'rating') {
-        transformedWalkers.sort((a, b) => b.rating - a.rating);
+        transformedWalkers.sort((a, b) => b.average_rating - a.average_rating);
       } else if (sortBy === 'price_low') {
         transformedWalkers.sort((a, b) => a.hourly_rate - b.hourly_rate);
       } else if (sortBy === 'price_high') {
@@ -124,23 +106,11 @@ const FindWalkers = () => {
     }
 
     if (filters.minRating > 0) {
-      filtered = filtered.filter(w => w.rating >= filters.minRating);
+      filtered = filtered.filter(w => w.average_rating >= filters.minRating);
     }
 
     if (filters.experience > 0) {
       filtered = filtered.filter(w => w.experience_years >= filters.experience);
-    }
-
-    if (filters.certifications.length > 0) {
-      filtered = filtered.filter(w => 
-        w.certifications?.some(cert => filters.certifications.includes(cert))
-      );
-    }
-
-    if (filters.languages.length > 0) {
-      filtered = filtered.filter(w => 
-        w.languages?.some(lang => filters.languages.includes(lang))
-      );
     }
 
     setFilteredWalkers(filtered);
@@ -149,12 +119,12 @@ const FindWalkers = () => {
   const searchFilteredWalkers = filteredWalkers.filter(walker => {
     if (!searchTerm) return true;
     
-    const fullName = `${walker.users?.first_name || ''} ${walker.users?.last_name || ''}`.toLowerCase();
-    const city = walker.city?.toLowerCase() || '';
+    const fullName = `${walker.first_name || ''} ${walker.last_name || ''}`.toLowerCase();
+    const location = walker.location?.toLowerCase() || '';
     const bio = walker.bio?.toLowerCase() || '';
     
     return fullName.includes(searchTerm.toLowerCase()) ||
-           city.includes(searchTerm.toLowerCase()) ||
+           location.includes(searchTerm.toLowerCase()) ||
            bio.includes(searchTerm.toLowerCase());
   });
 
@@ -171,7 +141,6 @@ const FindWalkers = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-white/95 backdrop-blur">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
@@ -187,7 +156,6 @@ const FindWalkers = () => {
             </Button>
           </div>
 
-          {/* Search and Filters */}
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -252,26 +220,26 @@ const FindWalkers = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {searchFilteredWalkers.map((walker) => (
-              <Card key={walker.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={walker.user_id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-12 w-12">
                       <AvatarImage 
-                        src={walker.users?.avatar_url} 
+                        src={walker.avatar_url} 
                         alt="Photo du promeneur" 
                       />
                       <AvatarFallback>
-                        {walker.users?.first_name?.[0] || 'P'}
+                        {walker.first_name?.[0] || 'P'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <CardTitle className="text-lg">
-                        {walker.users?.first_name || ''} {walker.users?.last_name || ''}
+                        {walker.first_name || ''} {walker.last_name || ''}
                       </CardTitle>
                       <div className="flex items-center space-x-2">
                         <div className="flex items-center">
                           <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="ml-1 text-sm font-medium">{walker.rating.toFixed(1)}</span>
+                          <span className="ml-1 text-sm font-medium">{walker.average_rating.toFixed(1)}</span>
                         </div>
                         {walker.is_verified && (
                           <Badge variant="secondary" className="text-xs">
@@ -295,10 +263,10 @@ const FindWalkers = () => {
                     </div>
                   </div>
 
-                  {walker.city && (
+                  {walker.location && (
                     <div className="flex items-center text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4 mr-1" />
-                      <span>{walker.city}</span>
+                      <span>{walker.location}</span>
                     </div>
                   )}
 
@@ -310,7 +278,7 @@ const FindWalkers = () => {
 
                   <Button 
                     className="w-full" 
-                    onClick={() => navigate(`/book/${walker.id}`)}
+                    onClick={() => navigate(`/book/${walker.user_id}`)}
                   >
                     Réserver une balade
                   </Button>

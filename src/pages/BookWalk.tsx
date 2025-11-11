@@ -112,13 +112,14 @@ const BookWalk = () => {
 
     try {
       await createBooking({
-        walker_id: walkerId!,
-        dog_id: selectedDog,
-        booking_date: format(selectedDate, 'yyyy-MM-dd'),
-        start_time: selectedTime,
-        duration_minutes: duration,
-        pickup_address: pickupAddress,
-        special_instructions: specialInstructions || undefined,
+        walkerId: walkerId!,
+        dogId: selectedDog,
+        start_date: format(selectedDate, 'yyyy-MM-dd'),
+        end_date: format(selectedDate, 'yyyy-MM-dd'),
+        duration: duration,
+        service_type: 'walk',
+        base_price: 0,
+        notes: specialInstructions || undefined,
       });
 
       navigate('/dashboard');

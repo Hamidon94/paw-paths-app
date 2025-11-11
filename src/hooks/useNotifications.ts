@@ -4,10 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 export interface Notification {
   id: string;
   user_id: string;
-  notification_type: 'booking' | 'message' | 'review' | 'payment' | 'system';
+  type: string;
   title: string;
-  message: string;
-  related_id?: string;
+  description: string;
+  link?: string;
   is_read: boolean;
   created_at: string;
 }

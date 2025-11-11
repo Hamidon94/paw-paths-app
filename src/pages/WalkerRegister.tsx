@@ -101,20 +101,16 @@ const WalkerRegister = () => {
 
       if (userError) throw userError;
 
-      // Create walker profile
+      // Update user to become a sitter
       const { data: walkerData, error: walkerError } = await supabase
-        .from('walkers')
-        .insert({
-          user_id: userData.id,
+        .from('users')
+        .update({
+          role: 'sitter',
           bio: formData.bio,
-          experience_years: parseInt(formData.experience_years) || 0,
           hourly_rate: parseFloat(formData.hourly_rate),
-          service_radius: parseInt(formData.service_radius),
-          address: formData.address,
-          city: formData.city,
-          certifications: formData.certifications,
-          languages: formData.languages,
+          location: formData.city,
         })
+        .eq('id', userData.id)
         .select()
         .single();
 
@@ -125,18 +121,17 @@ const WalkerRegister = () => {
       Object.entries(formData.availabilities).forEach(([day, schedule], index) => {
         if (schedule.enabled) {
           availabilityEntries.push({
-            walker_id: walkerData.id,
-            day_of_week: index + 1, // 1 = Monday
+            sitter_id: userData.id,
+            day_of_week: index + 1,
             start_time: schedule.start,
             end_time: schedule.end,
-            is_active: true
           });
         }
       });
 
       if (availabilityEntries.length > 0) {
         const { error: availabilityError } = await supabase
-          .from('walker_availability')
+          .from('availability')
           .insert(availabilityEntries);
 
         if (availabilityError) throw availabilityError;
