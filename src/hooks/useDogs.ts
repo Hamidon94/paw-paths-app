@@ -29,22 +29,10 @@ export const useDogs = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get user profile to get internal ID
-      const { data: profile } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (!profile) {
-        setDogs([]);
-        return;
-      }
-
       const { data, error} = await supabase
         .from('pets')
         .select('*')
-        .eq('owner_id', profile.id)
+        .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
       
       // Map pets to dogs interface
@@ -85,18 +73,13 @@ export const useDogs = () => {
 
   const addDog = async (dogData: Omit<Dog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     try {
-      // Get current user ID from users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
-
-      if (userError) throw userError;
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('pets')
-        .insert([{ 
+        .insert([{
           name: dogData.name,
           breed: dogData.breed,
           age: dogData.age,
@@ -106,7 +89,7 @@ export const useDogs = () => {
           medical_history: dogData.medical_notes,
           temperament: dogData.behavior_notes,
           photo_url: dogData.photo_url,
-          owner_id: userData.id
+          owner_id: user.id
         }])
         .select()
         .single();

@@ -100,14 +100,9 @@ export const useBookings = () => {
     notes?: string;
   }) => {
     try {
-      // Get current user ID from users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
-
-      if (userError) throw userError;
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       // Get user's hourly rate
       const { data: sitterData } = await supabase
@@ -122,7 +117,7 @@ export const useBookings = () => {
       const { data, error } = await supabase
         .from('bookings')
         .insert({
-          owner_id: userData.id,
+          owner_id: user.id,
           sitter_id: bookingData.walkerId,
           pet_id: bookingData.dogId,
           start_date: bookingData.start_date,

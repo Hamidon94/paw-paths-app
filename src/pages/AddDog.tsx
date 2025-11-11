@@ -79,27 +79,14 @@ const AddDog = () => {
     setLoading(true);
 
     try {
-      // Get user profile to get the internal user ID
-      const { data: profile } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (!profile) {
-        toast({
-          title: "Erreur",
-          description: "Profil utilisateur introuvable",
-          variant: "destructive",
-        });
-        return;
-      }
+      // Use user.id directly
+      const userId = user.id;
 
       // Insert dog data
       const { error } = await supabase
-        .from('dogs')
+        .from('pets')
         .insert({
-          user_id: profile.id,
+          owner_id: userId,
           name: dogData.name,
           breed: dogData.breed,
           age: parseInt(dogData.age),

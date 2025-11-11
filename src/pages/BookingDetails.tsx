@@ -59,23 +59,16 @@ const BookingDetails = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      setUserId(user.id);
+      
+      // Check if user is a sitter
       const { data: userData } = await supabase
         .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
+        .select('role')
+        .eq('id', user.id)
         .single();
 
-      if (userData) {
-        setUserId(userData.id);
-        
-        const { data: walkerData } = await supabase
-          .from('walkers')
-          .select('id')
-          .eq('user_id', userData.id)
-          .maybeSingle();
-
-        setIsWalker(!!walkerData);
-      }
+      setIsWalker(userData?.role === 'sitter');
     };
 
     checkUserRole();
@@ -148,20 +141,15 @@ const BookingDetails = () => {
     if (!booking) return;
 
     try {
-      // Get current user ID
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
-
-      if (userError) throw userError;
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       const { error } = await supabase
         .from('reviews')
         .insert([{
           booking_id: booking.id,
-          author_id: userData.id,
+          author_id: user.id,
           sitter_id: booking.sitter_id || '',
           rating,
           comment: review,

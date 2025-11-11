@@ -87,14 +87,9 @@ export const useWalkers = () => {
     languages?: string[];
   }) => {
     try {
-      // Get current user ID from users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
-
-      if (userError) throw userError;
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('users')
@@ -103,7 +98,7 @@ export const useWalkers = () => {
           role: 'sitter',
           hourly_rate: walkerData.hourly_rate
         })
-        .eq('id', userData.id)
+        .eq('id', user.id)
 
       if (error) throw error;
 

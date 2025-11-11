@@ -51,19 +51,12 @@ const BookWalk = () => {
 
   const fetchWalkerDetails = async () => {
     try {
+      // Fetch user by id directly
       const { data, error } = await supabase
-        .from('walkers')
-        .select(`
-          *,
-          users!walkers_user_id_fkey(
-            first_name,
-            last_name,
-            email,
-            phone,
-            avatar_url
-          )
-        `)
+        .from('users')
+        .select('*')
         .eq('id', walkerId)
+        .eq('role', 'sitter')
         .single();
 
       if (error) throw error;
