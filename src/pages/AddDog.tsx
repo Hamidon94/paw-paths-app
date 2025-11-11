@@ -90,11 +90,11 @@ const AddDog = () => {
           name: dogData.name,
           breed: dogData.breed,
           age: parseInt(dogData.age),
-          size: dogData.size,
+          type: dogData.size,
           weight: dogData.weight ? parseFloat(dogData.weight) : null,
-          description: dogData.description,
-          medical_notes: dogData.medical_info,
-          behavior_notes: `Amical avec chiens: ${dogData.is_friendly_with_dogs}, Amical avec enfants: ${dogData.is_friendly_with_children}, Bien éduqué: ${dogData.is_trained}, Soins spéciaux: ${dogData.needs_special_care}`,
+          bio: dogData.description,
+          medical_history: dogData.medical_info,
+          temperament: `Amical avec chiens: ${dogData.is_friendly_with_dogs}, Amical avec enfants: ${dogData.is_friendly_with_children}, Bien éduqué: ${dogData.is_trained}, Soins spéciaux: ${dogData.needs_special_care}`,
           photo_url: dogData.photo_url
         });
 
