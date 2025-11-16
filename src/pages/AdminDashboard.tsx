@@ -11,6 +11,7 @@ import { AdminWalkers } from '@/components/admin/AdminWalkers';
 import { AdminPromotions } from '@/components/admin/AdminPromotions';
 import { AdminSupport } from '@/components/admin/AdminSupport';
 import { AdminBlog } from '@/components/admin/AdminBlog';
+import { AdminConfiguration } from '@/components/admin/AdminConfiguration';
 import { AdminProtection } from '@/components/AdminProtection';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -82,6 +83,10 @@ const AdminDashboard = () => {
                 <Shield className="w-4 h-4 mb-1" />
                 <span className="text-xs">Paramètres</span>
               </TabsTrigger>
+              <TabsTrigger value="configuration" className="flex-col h-auto py-3">
+                <FileText className="w-4 h-4 mb-1" />
+                <span className="text-xs">Config</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="dashboard" className="space-y-4">
@@ -120,11 +125,15 @@ const AdminDashboard = () => {
               <AdminBlog />
             </TabsContent>
 
-            <TabsContent value="settings">
-              <AdminSettings />
-            </TabsContent>
-          </Tabs>
-        </div>
+        <TabsContent value="settings">
+          <AdminSettings />
+        </TabsContent>
+
+        <TabsContent value="configuration">
+          <AdminConfiguration />
+        </TabsContent>
+      </Tabs>
+    </div>
       </div>
     </AdminProtection>
   );
