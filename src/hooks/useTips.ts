@@ -26,26 +26,21 @@ export const useTips = (walkerId?: string) => {
       if (walkerId) {
         query = query.eq('walker_id', walkerId);
       } else {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_user_id', user.id)
-          .single();
-
-        if (!userData) return;
+        // Use auth user id directly
+        const userId = user.id;
 
         // Query users table for sitter role
         const { data: sitterData } = await supabase
           .from('users')
           .select('id')
-          .eq('id', userData.id)
+          .eq('id', userId)
           .eq('role', 'sitter')
           .maybeSingle();
 
         if (sitterData) {
           query = query.eq('walker_id', sitterData.id);
         } else {
-          query = query.eq('client_user_id', userData.id);
+          query = query.eq('client_user_id', userId);
         }
       }
 
@@ -67,19 +62,14 @@ export const useTips = (walkerId?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (!userData) throw new Error('User not found');
+      // Use auth user id directly
+      const userId = user.id;
 
       const { error } = await supabase
         .from('tips')
         .insert({
           booking_id: bookingId,
-          client_user_id: userData.id,
+          client_user_id: userId,
           walker_id: walkerId,
           amount
         });

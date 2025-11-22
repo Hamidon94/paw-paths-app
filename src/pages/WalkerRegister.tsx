@@ -92,14 +92,8 @@ const WalkerRegister = () => {
     setLoading(true);
 
     try {
-      // Get user ID from users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (userError) throw userError;
+      // Use auth user id directly as user id
+      const userId = user.id;
 
       // Update user to become a sitter
       const { data: walkerData, error: walkerError } = await supabase
@@ -110,7 +104,7 @@ const WalkerRegister = () => {
           hourly_rate: parseFloat(formData.hourly_rate),
           location: formData.city,
         })
-        .eq('id', userData.id)
+        .eq('id', userId)
         .select()
         .single();
 
@@ -121,7 +115,7 @@ const WalkerRegister = () => {
       Object.entries(formData.availabilities).forEach(([day, schedule], index) => {
         if (schedule.enabled) {
           availabilityEntries.push({
-            sitter_id: userData.id,
+            sitter_id: userId,
             day_of_week: index + 1,
             start_time: schedule.start,
             end_time: schedule.end,

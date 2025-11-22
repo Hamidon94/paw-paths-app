@@ -73,20 +73,14 @@ const WalkerDashboard = () => {
 
   const fetchWalkerProfile = async (authUserId: string) => {
     try {
-      // Get user ID
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', authUserId)
-        .single();
-
-      if (userError) throw userError;
+      // Use auth user id directly
+      const userId = authUserId;
 
       // Get walker profile
       const { data: walkerData, error: walkerError } = await supabase
         .from('walkers')
         .select('*')
-        .eq('user_id', userData.id)
+        .eq('user_id', userId)
         .single();
 
       if (walkerError) {

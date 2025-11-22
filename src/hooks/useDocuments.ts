@@ -21,18 +21,13 @@ export const useDocuments = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (!userData) return;
+      // Use auth user id directly as user id in the users table
+      const userId = user.id;
 
       const { data, error } = await supabase
         .from('user_documents')
         .select('*')
-        .eq('user_id', userData.id)
+        .eq('user_id', userId)
         .order('uploaded_at', { ascending: false });
 
       if (error) throw error;
@@ -52,13 +47,8 @@ export const useDocuments = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (!userData) throw new Error('User not found');
+      // Use auth user id directly as user id
+      const userId = user.id;
 
       // Upload file to storage
       const fileExt = file.name.split('.').pop();
@@ -78,7 +68,7 @@ export const useDocuments = () => {
       const { error: insertError } = await supabase
         .from('user_documents')
         .insert({
-          user_id: userData.id,
+          user_id: userId,
           document_type: documentType,
           document_url: publicUrl
         });

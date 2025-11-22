@@ -24,16 +24,8 @@ export const AdminProtection = ({ children }: AdminProtectionProps) => {
         return;
       }
 
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (!userData) {
-        navigate('/dashboard');
-        return;
-      }
+      // Use auth user id directly
+      const userId = user.id;
 
       // Simple check: admin email
       if (user.email === 'dogwalking94@gmail.com') {
