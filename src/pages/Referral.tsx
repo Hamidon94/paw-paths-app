@@ -23,16 +23,11 @@ const Referral = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: userData } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
+      // Use auth user id directly
+      const userId = user.id;
 
-      if (userData) {
-        const code = `PAW${userData.id.substring(0, 8).toUpperCase()}`;
-        setReferralCode(code);
-      }
+      const code = `PAW${userId.substring(0, 8).toUpperCase()}`;
+      setReferralCode(code);
     } catch (error) {
       console.error('Error generating referral code:', error);
     }
