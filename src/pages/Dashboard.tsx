@@ -75,11 +75,12 @@ const Dashboard = () => {
       const today = new Date();
       const upcomingBookings = bookings.filter(booking => {
         const bookingDate = new Date(booking.booking_date);
-        return bookingDate >= today && booking.status !== 'cancelled';
+        const status = booking.status.toUpperCase();
+        return bookingDate >= today && status !== 'CANCELLED';
       }).length;
 
       const totalSpent = bookings
-        .filter(booking => booking.status === 'completed')
+        .filter(booking => booking.status.toUpperCase() === 'COMPLETED')
         .reduce((sum, booking) => sum + Number(booking.total_price), 0);
 
       setStats({
@@ -96,30 +97,33 @@ const Dashboard = () => {
     return bookings
       .filter(booking => {
         const bookingDate = new Date(booking.booking_date);
-        return bookingDate >= today && booking.status !== 'cancelled';
+        const status = booking.status.toUpperCase();
+        return bookingDate >= today && status !== 'CANCELLED';
       })
       .sort((a, b) => new Date(a.booking_date).getTime() - new Date(b.booking_date).getTime())
       .slice(0, 3);
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed': return 'default';
-      case 'pending': return 'secondary';
-      case 'in_progress': return 'default';
-      case 'completed': return 'outline';
-      case 'cancelled': return 'destructive';
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'CONFIRMED': return 'default';
+      case 'PENDING': return 'secondary';
+      case 'IN_PROGRESS': return 'default';
+      case 'COMPLETED': return 'outline';
+      case 'CANCELLED': return 'destructive';
       default: return 'secondary';
     }
   };
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'confirmed': return 'Confirmée';
-      case 'pending': return 'En attente';
-      case 'in_progress': return 'En cours';
-      case 'completed': return 'Terminée';
-      case 'cancelled': return 'Annulée';
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'CONFIRMED': return 'Confirmée';
+      case 'PENDING': return 'En attente';
+      case 'IN_PROGRESS': return 'En cours';
+      case 'COMPLETED': return 'Terminée';
+      case 'CANCELLED': return 'Annulée';
       default: return status;
     }
   };
