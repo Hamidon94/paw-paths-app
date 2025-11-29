@@ -52,7 +52,7 @@ const WalkerEarnings = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const completedBookings = bookings.filter(b => b.status === 'completed');
+  const completedBookings = bookings.filter(b => b.status.toUpperCase() === 'COMPLETED');
   const totalFromBookings = completedBookings.reduce((sum, b) => sum + (b.walker_amount || 0), 0);
   const totalEarnings = totalFromBookings + totalTips;
 

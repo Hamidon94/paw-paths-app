@@ -16,23 +16,25 @@ const MyBookings = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'secondary';
-      case 'confirmed': return 'default';
-      case 'in_progress': return 'default';
-      case 'completed': return 'default';
-      case 'cancelled': return 'destructive';
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'PENDING': return 'secondary';
+      case 'CONFIRMED': return 'default';
+      case 'IN_PROGRESS': return 'default';
+      case 'COMPLETED': return 'default';
+      case 'CANCELLED': return 'destructive';
       default: return 'secondary';
     }
   };
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'En attente';
-      case 'confirmed': return 'Confirmée';
-      case 'in_progress': return 'En cours';
-      case 'completed': return 'Terminée';
-      case 'cancelled': return 'Annulée';
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'PENDING': return 'En attente';
+      case 'CONFIRMED': return 'Confirmée';
+      case 'IN_PROGRESS': return 'En cours';
+      case 'COMPLETED': return 'Terminée';
+      case 'CANCELLED': return 'Annulée';
       default: return status;
     }
   };
@@ -41,7 +43,7 @@ const MyBookings = () => {
     let filtered = bookings;
     
     if (status && status.length > 0) {
-      filtered = filtered.filter(booking => status.includes(booking.status));
+      filtered = filtered.filter(booking => status.includes(booking.status.toUpperCase()));
     }
     
     if (searchTerm) {
@@ -56,9 +58,9 @@ const MyBookings = () => {
     return filtered;
   };
 
-  const upcomingBookings = filterBookings(['pending', 'confirmed']);
-  const activeBookings = filterBookings(['in_progress']);
-  const pastBookings = filterBookings(['completed', 'cancelled']);
+  const upcomingBookings = filterBookings(['PENDING', 'CONFIRMED']);
+  const activeBookings = filterBookings(['IN_PROGRESS']);
+  const pastBookings = filterBookings(['COMPLETED', 'CANCELLED']);
 
   if (loading) {
     return (

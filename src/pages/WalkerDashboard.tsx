@@ -37,7 +37,7 @@ const WalkerDashboard = () => {
   const navigate = useNavigate();
 
   // Calculate real stats from bookings
-  const completedBookings = bookings.filter(b => b.status === 'completed' && b.sitter_id === walker?.user_id);
+  const completedBookings = bookings.filter(b => b.status.toUpperCase() === 'COMPLETED' && b.sitter_id === walker?.user_id);
   const stats = {
     totalWalks: completedBookings.length,
     totalEarnings: completedBookings.reduce((sum, b) => sum + (b.walker_amount || 0), 0) + totalTips,
@@ -116,37 +116,39 @@ const WalkerDashboard = () => {
   };
 
   const handleBookingAction = async (bookingId: string, action: 'accept' | 'reject', notes?: string) => {
-    const status = action === 'accept' ? 'confirmed' : 'cancelled';
+    const status = action === 'accept' ? 'CONFIRMED' : 'CANCELLED';
     await updateBookingStatus(bookingId, status, notes);
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'secondary';
-      case 'confirmed': return 'default';
-      case 'in_progress': return 'default';
-      case 'completed': return 'default';
-      case 'cancelled': return 'destructive';
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'PENDING': return 'secondary';
+      case 'CONFIRMED': return 'default';
+      case 'IN_PROGRESS': return 'default';
+      case 'COMPLETED': return 'default';
+      case 'CANCELLED': return 'destructive';
       default: return 'secondary';
     }
   };
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending': return 'En attente';
-      case 'confirmed': return 'Confirmée';
-      case 'in_progress': return 'En cours';
-      case 'completed': return 'Terminée';
-      case 'cancelled': return 'Annulée';
+    const s = status.toUpperCase();
+    switch (s) {
+      case 'PENDING': return 'En attente';
+      case 'CONFIRMED': return 'Confirmée';
+      case 'IN_PROGRESS': return 'En cours';
+      case 'COMPLETED': return 'Terminée';
+      case 'CANCELLED': return 'Annulée';
       default: return status;
     }
   };
 
   // Filter bookings for this walker
   const walkerBookings = bookings.filter(booking => booking.sitter_id === walker?.user_id);
-  const pendingBookings = walkerBookings.filter(b => b.status === 'pending');
-  const upcomingBookings = walkerBookings.filter(b => b.status === 'confirmed');
-  const pastBookings = walkerBookings.filter(b => ['completed', 'cancelled'].includes(b.status));
+  const pendingBookings = walkerBookings.filter(b => b.status.toUpperCase() === 'PENDING');
+  const upcomingBookings = walkerBookings.filter(b => b.status.toUpperCase() === 'CONFIRMED');
+  const pastBookings = walkerBookings.filter(b => ['COMPLETED', 'CANCELLED'].includes(b.status.toUpperCase()));
 
   if (loading) {
     return (
@@ -308,13 +310,13 @@ const WalkerDashboard = () => {
                             </div>
                             <div className="flex items-center">
                               <Euro className="h-4 w-4 mr-2" />
-                              {booking.walker_amount.toFixed(2)}€ (votre part)
+                              {(booking.walker_amount || 0).toFixed(2)}€ (votre part)
                             </div>
                           </div>
 
-                          {booking.special_instructions && (
+                          {booking.notes && (
                             <div className="mt-3 p-3 bg-muted rounded-lg">
-                              <p className="text-sm">{booking.special_instructions}</p>
+                              <p className="text-sm">{booking.notes}</p>
                             </div>
                           )}
                         </div>
@@ -388,7 +390,7 @@ const WalkerDashboard = () => {
 
                         <div className="text-right">
                           <p className="text-lg font-medium text-primary">
-                            {booking.walker_amount.toFixed(2)}€
+                            {(booking.walker_amount || 0).toFixed(2)}€
                           </p>
                           <Button 
                             size="sm" 
@@ -446,7 +448,7 @@ const WalkerDashboard = () => {
 
                         <div className="text-right">
                           <p className="text-lg font-medium">
-                            {booking.walker_amount.toFixed(2)}€
+                            {(booking.walker_amount || 0).toFixed(2)}€
                           </p>
                           <p className="text-xs text-muted-foreground">
                             Terminée
