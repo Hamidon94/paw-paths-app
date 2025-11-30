@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Calendar, Clock, Search } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 
 export const SearchForm = () => {
   const navigate = useNavigate();
@@ -13,15 +13,18 @@ export const SearchForm = () => {
   const [dogSize, setDogSize] = useState("");
 
   const handleSearch = () => {
-    // Redirect to walkers page with search params
-    navigate('/walkers');
+    const params = new URLSearchParams();
+    if (serviceType) params.set('service', serviceType);
+    if (address) params.set('location', address);
+    if (dogSize) params.set('size', dogSize);
+    navigate(`/walkers?${params.toString()}`);
   };
 
   const handleGeolocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setAddress(`${position.coords.latitude}, ${position.coords.longitude}`);
+          setAddress(`${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`);
         },
         (error) => {
           console.error("Erreur de géolocalisation:", error);
@@ -41,21 +44,22 @@ export const SearchForm = () => {
                 <SelectValue placeholder="Choisir..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="promenade-30">Promenade 30 min</SelectItem>
-                <SelectItem value="promenade-60">Promenade 60 min</SelectItem>
-                <SelectItem value="visite-simple">Visite simple</SelectItem>
-                <SelectItem value="visite-sanitaire">Visite sanitaire</SelectItem>
-                <SelectItem value="garde-domicile">Garde à domicile</SelectItem>
-                <SelectItem value="pension">Pension canine</SelectItem>
+                <SelectItem value="promenade">Promenade (min. 8€)</SelectItem>
+                <SelectItem value="visite">Visite à domicile (min. 8€)</SelectItem>
+                <SelectItem value="hebergement-nuit">Hébergement nuit (min. 10€)</SelectItem>
+                <SelectItem value="hebergement-jour">Hébergement jour (min. 10€)</SelectItem>
+                <SelectItem value="garde-domicile">Garde à domicile (min. 12€)</SelectItem>
+                <SelectItem value="visite-sanitaire">Visite sanitaire (min. 16€)</SelectItem>
+                <SelectItem value="veterinaire">Accomp. vétérinaire (min. 13€)</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="lg:col-span-1">
-            <label className="text-sm font-medium mb-2 block">Adresse</label>
+          <div className="lg:col-span-2">
+            <label className="text-sm font-medium mb-2 block">Adresse ou code postal</label>
             <div className="relative">
               <Input
-                placeholder="Votre adresse..."
+                placeholder="Entrez votre adresse..."
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 className="pr-10"
@@ -66,6 +70,7 @@ export const SearchForm = () => {
                 size="sm"
                 className="absolute right-0 top-0 h-full"
                 onClick={handleGeolocation}
+                title="Utiliser ma position"
               >
                 <MapPin className="h-4 w-4" />
               </Button>
@@ -82,13 +87,9 @@ export const SearchForm = () => {
                 <SelectItem value="petit">Petit (&lt;10kg)</SelectItem>
                 <SelectItem value="moyen">Moyen (10-25kg)</SelectItem>
                 <SelectItem value="grand">Grand (&gt;25kg)</SelectItem>
+                <SelectItem value="tres-grand">Très grand (&gt;40kg)</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="lg:col-span-1">
-            <label className="text-sm font-medium mb-2 block">Date & Heure</label>
-            <Input type="datetime-local" />
           </div>
 
           <div className="lg:col-span-1 flex items-end">
