@@ -6,14 +6,14 @@ export const UserTypesSection = () => {
     <section className="py-20 px-4 bg-gradient-to-b from-sage-light/20 to-ocean-light/20">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Rejoignez notre{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               communauté
             </span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Que vous soyez propriétaire d'un chien ou passionné d'animaux, nous avons la solution pour vous
+            Que vous soyez propriétaire d'un chien ou passionné d'animaux
           </p>
         </div>
         
@@ -31,19 +31,19 @@ export const UserTypesSection = () => {
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-sage rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Trouvez des promeneurs près de chez vous</p>
+                  <p className="text-muted-foreground">Trouvez des promeneurs vérifiés près de chez vous</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-sage rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Réservez en fonction de vos disponibilités</p>
+                  <p className="text-muted-foreground">Paiement sécurisé avec système escrow</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-sage rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Suivez la promenade en temps réel</p>
+                  <p className="text-muted-foreground">Recevez photos et vidéos pendant la prestation</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-sage rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Tarifs à partir de 7€ les 30 minutes</p>
+                  <p className="text-muted-foreground">Services à partir de 8€</p>
                 </div>
               </div>
               <Button variant="sage" size="lg" className="w-full" onClick={() => window.location.href = '/auth?type=owner'}>
@@ -65,15 +65,15 @@ export const UserTypesSection = () => {
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-ocean rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Gérez vos disponibilités facilement</p>
+                  <p className="text-muted-foreground">Définissez vos propres tarifs (minimums respectés)</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-ocean rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Acceptez les missions qui vous conviennent</p>
+                  <p className="text-muted-foreground">Gérez vos disponibilités librement</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-ocean rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-muted-foreground">Gagnez jusqu'à 80% du tarif de base</p>
+                  <p className="text-muted-foreground">Gardez 87% de vos gains (commission 13%)</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-ocean rounded-full mt-2 flex-shrink-0"></div>
